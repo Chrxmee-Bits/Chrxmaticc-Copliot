@@ -14,21 +14,55 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
-    /* ═══ ORIGINAL v7.0 STYLES — COMPLETELY PRESERVED ═══ */
-    *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+    /* ═══════════════════════════════════════════════════════════
+       APP.HTML — v8.0 FULL ENGINE + ALL VISUALS + WebGL
+       ═══════════════════════════════════════════════════════════ */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
     html{height:100%;width:100%;overflow:clip;position:fixed;inset:0}
     body{height:100%;width:100%;overflow:clip;position:relative;touch-action:pan-y;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;transition:background .5s,color .5s}
     body *{touch-action:pan-y}
 
-    :root{--a:#d4a574;--a2:#c9956b;--glow:rgba(212,165,116,.22);--bg:#0b0b0a;--surf:rgba(20,18,14,.9);--brd:rgba(212,165,116,.14);--txt:#e8d5c4;--mut:#7a6a5a}
-    body.theme-midnight{--a:#9090d8;--a2:#6060b0;--glow:rgba(130,130,220,.2);--bg:#08080f;--surf:rgba(12,12,22,.92);--brd:rgba(100,100,180,.15);--txt:#e0e0f0;--mut:#6060a0}
+    :root{--a:#d4a574;--a2:#c9956b;--glow:rgba(212,165,116,.25);--bg:#0b0b0a;--surf:rgba(20,18,14,.9);--brd:rgba(212,165,116,.14);--txt:#e8d5c4;--mut:#7a6a5a}
+    body.theme-midnight{--a:#9090d8;--a2:#6060b0;--glow:rgba(130,130,220,.22);--bg:#08080f;--surf:rgba(12,12,22,.92);--brd:rgba(100,100,180,.15);--txt:#e0e0f0;--mut:#6060a0}
     body.theme-glass{--a:#a0b8e8;--a2:#8090c8;--glow:rgba(140,170,230,.18);--bg:#080810;--surf:rgba(22,24,42,.5);--brd:rgba(255,255,255,.09);--txt:#e8e8f4;--mut:#7878a0}
     body.theme-chrome{--a:#ccc;--a2:#999;--glow:rgba(200,200,200,.15);--bg:#141414;--surf:rgba(28,28,28,.96);--brd:rgba(80,80,80,.35);--txt:#e0e0e0;--mut:#666}
     body.theme-white{--a:#0a84ff;--a2:#0055cc;--glow:rgba(10,132,255,.14);--bg:#f0f2f5;--surf:rgba(255,255,255,.97);--brd:rgba(0,0,0,.1);--txt:#1a1a1a;--mut:#999}
-    body.theme-chromatic{--a:#d4a574;--a2:#4a7fc0;--glow:rgba(150,130,200,.2);--bg:#0d0e14;--surf:rgba(20,20,28,.9);--brd:rgba(140,130,180,.16);--txt:#e8d5c4;--mut:#8a8a9a}
+    body.theme-chromatic{--a:#d4a574;--a2:#4a7fc0;--glow:rgba(150,130,200,.22);--bg:#0d0e14;--surf:rgba(20,20,28,.9);--brd:rgba(140,130,180,.16);--txt:#e8d5c4;--mut:#8a8a9a}
     body.theme-liquid{--a:#bbb;--a2:#888;--glow:rgba(180,180,200,.18);--bg:#111114;--surf:rgba(24,24,28,.95);--brd:rgba(140,140,150,.2);--txt:#d4d4d8;--mut:#777}
     body.theme-rainbow{--a:#ff9ff3;--a2:#ff6b6b;--glow:rgba(255,150,200,.18);--bg:#0e0e18;--surf:rgba(18,18,28,.95);--brd:rgba(255,255,255,.08);--txt:#f0f0f8;--mut:#888}
-    @media (prefers-color-scheme: light){:root{--a:#b8742a;--a2:#d4a574;--glow:rgba(180,130,80,.12);--bg:#faf8f5;--surf:rgba(255,253,250,.9);--brd:rgba(180,130,80,.15);--txt:#1a1410;--mut:#b8a898}}
+
+    /* ═══ CUSTOM EMOJI ═══ */
+    .custom-emoji{width:20px;height:20px;vertical-align:middle;display:inline-block;object-fit:contain;margin:0 1px;border-radius:3px}
+    .custom-emoji.emoji-gif{width:24px;height:24px;border-radius:4px}
+    .bubble .custom-emoji{width:22px;height:22px}
+    .bubble .custom-emoji.emoji-gif{width:26px;height:26px}
+
+    /* ═══ PARTICLES & FIRE ═══ */
+    #particleCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+    #fireCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.1;mix-blend-mode:screen}
+
+    /* ═══ CURSOR GOD RAY ═══ */
+    #cursorGodRay{position:fixed;pointer-events:none;z-index:99999;width:180px;height:180px;border-radius:50%;mix-blend-mode:screen;opacity:.12;transform:translate(-50%,-50%);transition:width .3s,height .3s,opacity .3s}
+    #cursorRingMaster{position:fixed;pointer-events:none;z-index:99998;width:40px;height:40px;border-radius:50%;border:2px solid var(--a);box-shadow:0 0 30px var(--a),0 0 60px var(--glow);transform:translate(-50%,-50%);transition:width .15s,height .15s,border-color .3s}
+    #cursorRingMaster.clicking{width:25px;height:25px;border-width:3px;box-shadow:0 0 60px var(--a),0 0 100px var(--glow)}
+    @media(max-width:768px){#cursorGodRay,#cursorRingMaster{display:none!important}}
+
+    /* ═══ GLITCH OVERLAY ═══ */
+    .glitch-overlay{position:fixed;inset:0;z-index:99990;pointer-events:none;opacity:0;transition:opacity .08s;background:linear-gradient(0deg,rgba(255,0,0,.04) 0%,transparent 35%,rgba(0,0,255,.04) 65%,transparent 100%);mix-blend-mode:overlay}
+    .glitch-overlay.active{opacity:1}
+
+    /* ═══ GETO PEEK ═══ */
+    .geto-peek{position:fixed;bottom:-5px;right:-5px;z-index:50;width:80px;height:80px;cursor:pointer;transition:all .3s cubic-bezier(.175,.885,.32,1.275);opacity:.4;animation:getoBounce 4s ease-in-out infinite}
+    .geto-peek img{width:100%;height:100%;object-fit:contain}
+    .geto-peek:hover{opacity:.8;transform:scale(1.1) translateY(-6px)}
+    @keyframes getoBounce{0%,100%{transform:translateY(0) rotate(0deg)}30%{transform:translateY(-12px) rotate(3deg)}60%{transform:translateY(-4px) rotate(-2deg)}85%{transform:translateY(-18px) rotate(0deg)}}
+    @media(max-width:768px){.geto-peek{width:55px;height:55px;bottom:50px;right:0;opacity:.3}}
+
+    /* ═══ BEE FLIGHT ═══ */
+    .bee-fly{position:fixed;z-index:51;pointer-events:none;width:36px;height:36px;animation:beePath 14s linear infinite}
+    .bee-fly img{width:100%;height:100%;object-fit:contain}
+    @keyframes beePath{0%{top:8%;left:-5%;transform:rotate(0deg)}25%{top:65%;left:28%;transform:rotate(12deg)}50%{top:18%;left:68%;transform:rotate(-8deg)}75%{top:55%;left:48%;transform:rotate(4deg)}100%{top:8%;left:105%;transform:rotate(0deg)}}
+    @media(max-width:768px){.bee-fly{width:24px;height:24px;animation-duration:18s}}
 
     /* ═══ LANDING ═══ */
     .land{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;transition:opacity .5s,transform .5s,visibility .5s}
@@ -296,173 +330,7 @@
     .commit-btn svg{width:13px!important;height:13px!important;fill:var(--a)!important}
     .tb-spacer{flex:1!important}
 
-    /* ═══ NEW: OS LIGHT MODE CHAT OVERRIDES ═══ */
-    @media (prefers-color-scheme: light) {
-      body:not([class*="theme-"]) .topbar,
-      body:not([class*="theme-"]) .inputbar {
-        background: rgba(255,255,255,.95) !important;
-        border-color: rgba(0,0,0,.08) !important;
-        backdrop-filter: blur(24px) !important;
-        -webkit-backdrop-filter: blur(24px) !important;
-      }
-      body:not([class*="theme-"]) .bubble-row.ai .bubble {
-        background: #fff !important;
-        border: 1px solid #e0e4ea !important;
-        color: #1a1a1a !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,.06) !important;
-      }
-      body:not([class*="theme-"]) .bubble-row.user .bubble {
-        background: linear-gradient(145deg, #0a84ff, #0077ed) !important;
-        color: #fff !important;
-        border: none !important;
-        box-shadow: 0 4px 18px rgba(10,132,255,.3) !important;
-      }
-      body:not([class*="theme-"]) #userInput { color: #1a1a1a !important; }
-      body:not([class*="theme-"]) #userInput::placeholder { color: #999 !important; }
-      body:not([class*="theme-"]) .input-box {
-        background: #fff !important;
-        border-color: #e0e4ea !important;
-      }
-      body:not([class*="theme-"]) .send-btn { box-shadow: 0 4px 18px rgba(10,132,255,.35) !important; }
-      body:not([class*="theme-"]) .topbar-name {
-        background: linear-gradient(135deg, #0055cc, #0a84ff, #34a8ff) !important;
-        -webkit-background-clip: text !important;
-        -webkit-text-fill-color: transparent !important;
-        animation: shimmer 3.5s ease-in-out infinite !important;
-      }
-    }
-
-    /* ═══ BLEND PANEL STYLES ═══ */
-    .blend-panel {
-      position: fixed; inset: 0; z-index: 600;
-      background: var(--surf); backdrop-filter: blur(32px);
-      -webkit-backdrop-filter: blur(32px);
-      border-left: 2px solid var(--brd); border-radius: 0;
-      display: flex; flex-direction: column;
-      box-shadow: -8px 0 40px rgba(0,0,0,.6);
-      animation: blendSlideIn .4s cubic-bezier(.34,1.56,.64,1) forwards;
-      max-width: 420px; width: 100%; margin-left: auto;
-      transition: transform .3s ease;
-    }
-    @keyframes blendSlideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    .blend-panel.hidden { transform: translateX(100%); }
-    .blend-panel-hdr {
-      display: flex; align-items: center; gap: 12px;
-      padding: 16px; border-bottom: 1px solid var(--brd);
-      flex-shrink: 0;
-    }
-    .blend-room-icon {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--a2), var(--a));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; box-shadow: 0 4px 16px var(--glow);
-    }
-    .blend-room-info { flex: 1; }
-    .blend-room-name { font-size: 16px; font-weight: 700; color: var(--txt); }
-    .blend-room-vibe { font-size: 11px; color: var(--mut); }
-    .blend-panel-actions { display: flex; gap: 8px; }
-    .blend-btn-icon {
-      background: none; border: none; cursor: pointer;
-      color: var(--mut); font-size: 18px; padding: 4px;
-      transition: color .2s, transform .2s;
-    }
-    .blend-btn-icon:hover { color: var(--a); transform: scale(1.15); }
-    .blend-messages {
-      flex: 1; overflow-y: auto; padding: 16px;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .blend-msg {
-      display: flex; flex-direction: column;
-      animation: bpop .25s ease-out;
-    }
-    .blend-msg-user {
-      font-size: 11px; font-weight: 600; color: var(--a);
-      margin-bottom: 2px;
-    }
-    .blend-msg-content {
-      background: rgba(255,255,255,.05); border: 1px solid var(--brd);
-      padding: 10px 14px; border-radius: 14px;
-      color: var(--txt); font-size: 13px; line-height: 1.5;
-      word-break: break-word;
-    }
-    .blend-msg.ai .blend-msg-content {
-      background: var(--glow); border-color: var(--a);
-    }
-    .blend-inputbar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 16px; border-top: 1px solid var(--brd);
-      flex-shrink: 0;
-    }
-    .blend-input {
-      flex: 1; background: rgba(255,255,255,.04);
-      border: 1px solid var(--brd); border-radius: 12px;
-      padding: 10px 14px; color: var(--txt); font-size: 13px;
-      font-family: inherit; outline: none;
-      transition: border-color .2s;
-    }
-    .blend-input:focus { border-color: var(--a); }
-    .blend-send-btn {
-      width: 38px; height: 38px; border-radius: 12px;
-      border: none; background: linear-gradient(135deg, var(--a2), var(--a));
-      color: var(--bg); font-size: 16px; cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
-    }
-    .blend-send-btn:hover { transform: scale(1.08); box-shadow: 0 0 16px var(--glow); }
-    /* ═══ BLEND SIDEBAR SECTION ═══ */
-    .blend-sidebar-section {
-      border-top: 1px solid var(--brd); padding-top: 12px; margin-top: 12px;
-    }
-    .blend-sidebar-hdr {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px;
-      font-size: 11px; font-weight: 700; color: var(--mut);
-      text-transform: uppercase; letter-spacing: 1px;
-    }
-    .blend-create-btn {
-      background: var(--glow); border: 1px solid var(--a);
-      color: var(--a); font-size: 10px; padding: 4px 10px;
-      border-radius: 12px; cursor: pointer; font-family: inherit;
-      transition: all .2s;
-    }
-    .blend-create-btn:hover { background: var(--a); color: var(--bg); }
-    .blend-room-list { display: flex; flex-direction: column; gap: 2px; }
-    .blend-room-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px 10px; border-radius: 10px;
-      cursor: pointer; color: var(--txt); font-size: 12px;
-      transition: background .15s;
-    }
-    .blend-room-item:hover, .blend-room-item.active { background: var(--glow); }
-    .blend-room-item-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* ═══ INSANE VISUALS ═══ */
-    .custom-emoji{width:20px;height:20px;vertical-align:middle;display:inline-block;object-fit:contain;margin:0 1px;border-radius:3px}
-    .custom-emoji.emoji-gif{width:24px;height:24px;border-radius:4px}
-    .bubble .custom-emoji{width:22px;height:22px}
-    .bubble .custom-emoji.emoji-gif{width:26px;height:26px}
-    #particleCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-    #fireCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.1;mix-blend-mode:screen}
-    #cursorGodRay{position:fixed;pointer-events:none;z-index:99999;width:180px;height:180px;border-radius:50%;mix-blend-mode:screen;opacity:.12;transform:translate(-50%,-50%);transition:width .3s,height .3s,opacity .3s}
-    #cursorRingMaster{position:fixed;pointer-events:none;z-index:99998;width:40px;height:40px;border-radius:50%;border:2px solid var(--a);box-shadow:0 0 30px var(--a),0 0 60px var(--glow);transform:translate(-50%,-50%);transition:width .15s,height .15s,border-color .3s}
-    #cursorRingMaster.clicking{width:25px;height:25px;border-width:3px;box-shadow:0 0 60px var(--a),0 0 100px var(--glow)}
-    @media(max-width:768px){#cursorGodRay,#cursorRingMaster{display:none!important}}
-    .glitch-overlay{position:fixed;inset:0;z-index:99990;pointer-events:none;opacity:0;transition:opacity .08s;background:linear-gradient(0deg,rgba(255,0,0,.04) 0%,transparent 35%,rgba(0,0,255,.04) 65%,transparent 100%);mix-blend-mode:overlay}
-    .glitch-overlay.active{opacity:1}
-    .geto-peek{position:fixed;bottom:-5px;right:-5px;z-index:50;width:80px;height:80px;cursor:pointer;transition:all .3s cubic-bezier(.175,.885,.32,1.275);opacity:.4;animation:getoBounce 4s ease-in-out infinite}
-    .geto-peek img{width:100%;height:100%;object-fit:contain}
-    .geto-peek:hover{opacity:.8;transform:scale(1.1) translateY(-6px)}
-    @keyframes getoBounce{0%,100%{transform:translateY(0) rotate(0deg)}30%{transform:translateY(-12px) rotate(3deg)}60%{transform:translateY(-4px) rotate(-2deg)}85%{transform:translateY(-18px) rotate(0deg)}}
-    @media(max-width:768px){.geto-peek{width:55px;height:55px;bottom:50px;right:0;opacity:.3}}
-    .bee-fly{position:fixed;z-index:51;pointer-events:none;width:36px;height:36px;animation:beePath 14s linear infinite}
-    .bee-fly img{width:100%;height:100%;object-fit:contain}
-    @keyframes beePath{0%{top:8%;left:-5%;transform:rotate(0deg)}25%{top:65%;left:28%;transform:rotate(12deg)}50%{top:18%;left:68%;transform:rotate(-8deg)}75%{top:55%;left:48%;transform:rotate(4deg)}100%{top:8%;left:105%;transform:rotate(0deg)}}
-    @media(max-width:768px){.bee-fly{width:24px;height:24px;animation-duration:18s}}
+    /* ═══ GETO DEBUG PANEL ═══ */
     .geto-debug-panel{position:fixed;bottom:90px;right:20px;z-index:400;width:320px;background:var(--surf);border:1px solid var(--brd);border-radius:20px;padding:20px;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);box-shadow:0 8px 48px rgba(0,0,0,.5);display:none;flex-direction:column;gap:12px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
     .geto-debug-panel.on{display:flex}
     .geto-debug-input{background:rgba(255,255,255,.04);border:1px solid var(--brd);border-radius:12px;padding:12px;color:var(--txt);font-family:inherit;font-size:13px;resize:none;min-height:80px;outline:none;transition:border-color .2s}
@@ -524,13 +392,42 @@
     .achieve-text{font-size:13px;font-weight:600;color:var(--txt)}
     .achieve-sub{font-size:10px;color:var(--mut);margin-top:1px}
 
-    @media(max-width:520px){
-      .greet{font-size:20px}.land-inner{padding:0 14px}.chips{gap:6px;padding:14px 0 0}.chip{font-size:11px;padding:7px 13px}
-      .mesh-wrap,.mesh-wrap canvas{width:120px!important;height:120px!important}
-      #settingsPop,#modelPop{width:calc(100vw - 24px)}.plan-opts{grid-template-columns:1fr}
-      .geto-debug-panel{width:calc(100vw - 32px);right:8px;bottom:70px}
-    }
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important}}
+    /* ═══ BLEND PANEL ═══ */
+    .blend-panel{position:fixed;inset:0;z-index:600;background:var(--surf);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-left:2px solid var(--brd);display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.6);animation:blendSlideIn .4s cubic-bezier(.34,1.56,.64,1) forwards;max-width:420px;width:100%;margin-left:auto;transition:transform .3s ease;display:none;}
+    .blend-panel.open{display:flex;}
+    @keyframes blendSlideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+    .blend-panel-hdr{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--brd);flex-shrink:0}
+    .blend-room-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--a2),var(--a));display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px var(--glow)}
+    .blend-room-info{flex:1}
+    .blend-room-name{font-size:16px;font-weight:700;color:var(--txt)}
+    .blend-room-vibe{font-size:11px;color:var(--mut)}
+    .blend-panel-actions{display:flex;gap:8px}
+    .blend-btn-icon{background:none;border:none;cursor:pointer;color:var(--mut);font-size:18px;padding:4px;transition:color .2s,transform .2s}
+    .blend-btn-icon:hover{color:var(--a);transform:scale(1.15)}
+    .blend-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+    .blend-msg{display:flex;flex-direction:column;animation:bpop .25s ease-out}
+    .blend-msg-user{font-size:11px;font-weight:600;color:var(--a);margin-bottom:2px}
+    .blend-msg-content{background:rgba(255,255,255,.05);border:1px solid var(--brd);padding:10px 14px;border-radius:14px;color:var(--txt);font-size:13px;line-height:1.5;word-break:break-word}
+    .blend-msg.ai .blend-msg-content{background:var(--glow);border-color:var(--a)}
+    .blend-inputbar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-top:1px solid var(--brd);flex-shrink:0}
+    .blend-input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--brd);border-radius:12px;padding:10px 14px;color:var(--txt);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
+    .blend-input:focus{border-color:var(--a)}
+    .blend-send-btn{width:38px;height:38px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--a2),var(--a));color:var(--bg);font-size:16px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .blend-send-btn:hover{transform:scale(1.08);box-shadow:0 0 16px var(--glow)}
+    .blend-sidebar-section{border-top:1px solid var(--brd);padding-top:12px;margin-top:12px}
+    .blend-sidebar-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
+    .blend-create-btn{background:var(--glow);border:1px solid var(--a);color:var(--a);font-size:10px;padding:4px 10px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+    .blend-create-btn:hover{background:var(--a);color:var(--bg)}
+    .blend-room-list{display:flex;flex-direction:column;gap:2px}
+    .blend-room-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--txt);font-size:12px;transition:background .15s}
+    .blend-room-item:hover,.blend-room-item.active{background:var(--glow)}
+    .blend-room-item-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+    /* ═══ WebGL VIEWER PANEL ═══ */
+    .webgl-panel{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:none;flex-direction:column;align-items:center;justify-content:center}
+    .webgl-panel.open{display:flex}
+    .webgl-close{position:absolute;top:20px;right:20px;z-index:10;background:var(--surf);border:1px solid var(--brd);color:var(--txt);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px}
+    .webgl-canvas-wrap{width:100%;height:100%;max-width:800px;max-height:600px}
   </style>
 </head>
 <body class="theme-gold">
@@ -561,7 +458,7 @@
               <div class="l-effort-wrap"><div class="effort-track" id="lEffortTrack" style="width:90px"><div class="effort-fill" id="lEffortFill" style="width:33%"></div><div class="effort-thumb" id="lEffortThumb" style="left:calc(33% - 7px)"></div></div></div>
             </div>
             <div class="lbox-right">
-              <div class="lmodel-badge" id="lModelBadge"><img src="icon.png" style="width:14px;height:14px;border-radius:50%">Chrxmaticc Sonnet 2.3</div>
+              <div class="lmodel-badge" id="lModelBadge"><img src="icon.png" style="width:14px;height:14px;border-radius:50%">Chrxmaticc Sol 3.5</div>
               <button class="lsend" id="lSendBtn" onclick="sendFromLanding()"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
             </div>
           </div>
@@ -591,14 +488,11 @@
           <div class="sidebar-profile" onclick="location.href='settings.html'"><img src="icon.png" alt="" id="profileAvatar"><span id="profileName">Guest</span></div>
           <button class="sidebar-new" style="margin-top:8px;font-size:12px" onclick="toggleGetoDebug()"><img src="1525658200622239756.webp" alt="geto" style="width:18px;height:18px;border-radius:4px"> Explain to Geto</button>
         </div>
-        <!-- ═══ BLEND SIDEBAR SECTION ═══ -->
         <div class="blend-sidebar-section" id="blendSidebarSection">
-          <div class="blend-sidebar-hdr">
-            <span>Blend Rooms</span>
-            <button class="blend-create-btn" onclick="createBlendRoom()">+ New</button>
-          </div>
+          <div class="blend-sidebar-hdr"><span>Blend Rooms</span><button class="blend-create-btn" onclick="createBlendRoom()">+ New</button></div>
           <div class="blend-room-list" id="blendRoomList"></div>
         </div>
+        <button class="sidebar-new" style="margin-top:8px;font-size:12px" onclick="openWebGLViewer()">🌐 WebGL Viewer</button>
       </div>
       <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
       <div class="main" id="main">
@@ -627,7 +521,7 @@
             <button class="mic-btn" id="micBtn" onclick="toggleMic()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
             <button class="mic-btn" onclick="document.getElementById('fileInput').click()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></button>
             <input type="file" id="fileInput" style="display:none" accept="image/*,.js,.json,.html,.css,.md,.txt,.py,.glsl,.yml,.yaml,.xml,.svg" onchange="handleFileUpload(event)">
-            <button class="model-pill" id="modelPill" onclick="openModelPop()"><span id="modelLabel">Sonnet 2.3</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
+            <button class="model-pill" id="modelPill" onclick="openModelPop()"><span id="modelLabel">Sol 3.5</span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button>
             <button class="gh-pill" id="ghPill" onclick="openGitHubSection()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg><span class="gh-dot"></span><span id="ghLabel">GitHub</span></button>
             <div class="tb-spacer"></div>
             <button class="commit-btn" id="commitBtn" onclick="commitToRepo()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>Commit</button>
@@ -668,6 +562,34 @@
       <div id="getoDebugHint" style="font-size:11px;color:var(--mut);font-style:italic">the act of explaining helps you solve it yourself. geto is your rubber duck.</div>
     </div>
 
+    <!-- BLEND PANEL -->
+    <div class="blend-panel" id="blendPanel">
+      <div class="blend-panel-hdr">
+        <div class="blend-room-icon" id="blendRoomIcon">💬</div>
+        <div class="blend-room-info">
+          <div class="blend-room-name" id="blendRoomName">Room Name</div>
+          <div class="blend-room-vibe" id="blendRoomVibe">🔥 active</div>
+        </div>
+        <div class="blend-panel-actions">
+          <button class="blend-btn-icon" onclick="copyBlendInvite()" title="Copy invite link">🔗</button>
+          <button class="blend-btn-icon" id="blendRenameBtn" onclick="renameBlendRoom()" style="display:none;" title="Rename">✏️</button>
+          <button class="blend-btn-icon" id="blendDeleteBtn" onclick="deleteBlendRoom()" style="display:none;" title="Delete">🗑️</button>
+          <button class="blend-btn-icon" onclick="toggleBlendPanel()" title="Close">✕</button>
+        </div>
+      </div>
+      <div class="blend-messages" id="blendMessages"></div>
+      <div class="blend-inputbar">
+        <input type="text" class="blend-input" id="blendInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendBlendMessage()">
+        <button class="blend-send-btn" onclick="sendBlendMessage()">➤</button>
+      </div>
+    </div>
+
+    <!-- WebGL VIEWER -->
+    <div class="webgl-panel" id="webglPanel">
+      <button class="webgl-close" onclick="closeWebGLViewer()">✕</button>
+      <div class="webgl-canvas-wrap" id="webglCanvasWrap"></div>
+    </div>
+
     <div class="theme-pill" id="themePill">
       <div class="tdot2 active" data-theme="gold" onclick="setTheme('gold')" title="Gold" style="background:#0b0b0a"></div>
       <div class="tdot2" data-theme="midnight" onclick="setTheme('midnight')" title="Midnight" style="background:#08080f"></div>
@@ -682,30 +604,10 @@
     <canvas class="confetti-cv" id="confettiCanvas"></canvas>
   </div>
 
-  <!-- ═══ BLEND PANEL ═══ -->
-  <div class="blend-panel" id="blendPanel" style="display:none;">
-    <div class="blend-panel-hdr">
-      <div class="blend-room-icon" id="blendRoomIcon">💬</div>
-      <div class="blend-room-info">
-        <div class="blend-room-name" id="blendRoomName">Room Name</div>
-        <div class="blend-room-vibe" id="blendRoomVibe">🔥 active</div>
-      </div>
-      <div class="blend-panel-actions">
-        <button class="blend-btn-icon" onclick="copyBlendInvite()" title="Copy invite link">🔗</button>
-        <button class="blend-btn-icon" id="blendRenameBtn" onclick="renameBlendRoom()" style="display:none;" title="Rename">✏️</button>
-        <button class="blend-btn-icon" id="blendDeleteBtn" onclick="deleteBlendRoom()" style="display:none;" title="Delete">🗑️</button>
-        <button class="blend-btn-icon" onclick="toggleBlendPanel()" title="Close">✕</button>
-      </div>
-    </div>
-    <div class="blend-messages" id="blendMessages"></div>
-    <div class="blend-inputbar">
-      <input type="text" class="blend-input" id="blendInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendBlendMessage()">
-      <button class="blend-send-btn" onclick="sendBlendMessage()">➤</button>
-    </div>
-  </div>
-
   <script>
-    /* ═══ ORIGINAL v7.0 ENGINE — PRESERVED + BLEND FUNCTIONS ═══ */
+    /* ═══════════════════════════════════════════════════════════
+       INLINE ENGINE — FULL v7.0 + BLEND + WEBGL + ALL FEATURES
+       ═══════════════════════════════════════════════════════════ */
     (function(){
       var m=document.getElementById('messages');if(m){m.addEventListener('touchstart',function(){},{passive:true});m.addEventListener('touchmove',function(){},{passive:true});var app=document.getElementById('app');if(app){app.addEventListener('touchstart',function(e){if(e.target.closest('#messages'))return},{passive:true});app.addEventListener('touchmove',function(e){if(e.target.closest('#messages'))e.stopPropagation()},{passive:false})}m.style.overflowY='scroll';m.style.webkitOverflowScrolling='touch'}
     })();
@@ -713,21 +615,15 @@
     var ICONS={react:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/></svg>',css:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 4-9 4-9-4 9-4z"/><path d="M3 8v8l9 4 9-4V8"/></svg>',book:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>',server:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',bug:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 7a3 3 0 013 3v4a3 3 0 01-6 0v-4a3 3 0 013-3z"/><path d="M8 7V5a4 4 0 018 0v2"/><line x1="3" y1="11" x2="9" y2="11"/><line x1="15" y1="11" x2="21" y2="11"/><line x1="3" y1="17" x2="6" y2="17"/><line x1="18" y1="17" x2="21" y2="17"/></svg>',db:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',test:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',zap:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0l2.5 7.5L22 3l-4 7.5L24 12l-8 1.5L18 21l-3-6.5L10 22l1-8.5L2 15l5-5.5L0 6l8-3L12 0z"/></svg>'};
 
     var WORKFLOWS=[{key:'code',label:'Code',color:'#30d158'},{key:'plan',label:'Plan',color:'#0a84ff'},{key:'review',label:'Review',color:'#ff9f0a'},{key:'surprise',label:'Surprise',color:'#ff6b6b'},{key:'cancel',label:'Chat',color:null}];
-    var MODELS=[{key:'conversational',label:'Conversational 2.0',short:'Convo 2.0',desc:'Casual, natural chat.'},{key:'sonnet',label:'Sonnet 2.3',short:'Sonnet 2.3',desc:'Smart and balanced.'},{key:'intermediate',label:'Intermediate 1.5',short:'Inter 1.5',desc:'Faster with solid reasoning.'},{key:'speed',label:'Speed 1.0',short:'Speed 1.0',desc:'Fastest model.'},{key:'vision',label:'Vision 2.0',short:'Vision 2.0',desc:'Image-aware.'}];
-    var BP_MAP={code:{conversational:['explain','examples','guided','beginner','clarity','simplicity'],sonnet:['types','docs','optimize','explain','compare','test','animate','theme','accessible','minimal','reuse','ship','inline','nocomments','instant'],intermediate:['optimize','minimal','instant','nocomments','inline','reuse','efficient','shortcuts'],speed:['instant','minimal','nocomments','inline','rapid','quick'],vision:['design','ux','accessible','a11y','visual','animate','theme']},plan:{conversational:['guided','bullet','examples','mood','moodboard','visual'],sonnet:['rapid','bullet','guided','visual','moodboard','tradeoffs','scalability','alternatives','architecture'],intermediate:['rapid','bullet','tradeoffs','scalability','alternatives'],speed:['rapid','bullet','quick','snap'],vision:['moodboard','visual','mood','design','ux']},review:{conversational:['readability','clarity','beginner','guided','simplicity'],sonnet:['security','performance','patterns','readability','clarity','architecture','deep','a11y','tradeoffs'],intermediate:['security','performance','readability','quick','critical'],speed:['quick','critical','snap','performance'],vision:['design','ux','a11y','visual','accessible']},surprise:{conversational:['wholesome','creative','mood','examples','random'],sonnet:['creative','wholesome','overengineer','polyglot','glitch','experimental','random','speedrun','useful'],intermediate:['creative','glitch','random','speedrun','shortcuts'],speed:['random','speedrun','instant','snap'],vision:['creative','glitch','visual','experimental','design']},cancel:{conversational:[],sonnet:[],intermediate:[],speed:[],vision:[]}};
+    var MODELS=[{key:'conversational',label:'Conversational 2.0',short:'Convo 2.0',desc:'Casual, natural chat.'},{key:'sol',label:'Sol 3.5',short:'Sol 3.5',desc:'Elite engineer. Maximum chaos.'},{key:'intermediate',label:'Intermediate 1.5',short:'Inter 1.5',desc:'Faster with solid reasoning.'},{key:'speed',label:'Speed 1.0',short:'Speed 1.0',desc:'Fastest model.'},{key:'vision',label:'Vision 2.0',short:'Vision 2.0',desc:'Image-aware.'}];
+    var BP_MAP={code:{conversational:['explain','examples','guided','beginner','clarity','simplicity'],sol:['types','docs','optimize','explain','compare','test','animate','theme','accessible','minimal','reuse','ship','inline','nocomments','instant'],intermediate:['optimize','minimal','instant','nocomments','inline','reuse','efficient','shortcuts'],speed:['instant','minimal','nocomments','inline','rapid','quick'],vision:['design','ux','accessible','a11y','visual','animate','theme']},plan:{conversational:['guided','bullet','examples','mood','moodboard','visual'],sol:['rapid','bullet','guided','visual','moodboard','tradeoffs','scalability','alternatives','architecture'],intermediate:['rapid','bullet','tradeoffs','scalability','alternatives'],speed:['rapid','bullet','quick','snap'],vision:['moodboard','visual','mood','design','ux']},review:{conversational:['readability','clarity','beginner','guided','simplicity'],sol:['security','performance','patterns','readability','clarity','architecture','deep','a11y','tradeoffs'],intermediate:['security','performance','readability','quick','critical'],speed:['quick','critical','snap','performance'],vision:['design','ux','a11y','visual','accessible']},surprise:{conversational:['wholesome','creative','mood','examples','random'],sol:['creative','wholesome','overengineer','polyglot','glitch','experimental','random','speedrun','useful'],intermediate:['creative','glitch','random','speedrun','shortcuts'],speed:['random','speedrun','instant','snap'],vision:['creative','glitch','visual','experimental','design']},cancel:{conversational:[],sol:[],intermediate:[],speed:[],vision:[]}};
     var BP_LABELS={types:'TypeScript',docs:'JSDoc',optimize:'Optimize',explain:'Explain',compare:'Compare',test:'Tests',animate:'Animate',theme:'Light+Dark',accessible:'Accessible',minimal:'Minimal',reuse:'Use Libraries',ship:'Deploy Notes',inline:'Single File',nocomments:'No Comments',instant:'Just Code',security:'Security',performance:'Performance',patterns:'Patterns',readability:'Readability',clarity:'Clarity',architecture:'Architecture',deep:'Deep Analysis',quick:'Quick Review',critical:'Critical Only',snap:'Snap Judgment',creative:'Creative',wholesome:'Wholesome',overengineer:'Over-Engineer',polyglot:'Multi-Language',glitch:'Glitch Art',experimental:'Experimental',random:'Random',speedrun:'Speedrun',useful:'Keep It Useful',rapid:'Rapid',bullet:'Bullet Points',guided:'Guided',beginner:'Beginner Mode',examples:'Examples',moodboard:'Mood Board',tradeoffs:'Tradeoffs',scalability:'Scalability',alternatives:'Alternatives',visual:'Visual',mood:'Mood',design:'Design Focus',ux:'UX Focus',a11y:'Accessibility',shortcuts:'Shortcuts',efficient:'Efficient',simplicity:'Simplify'};
     var THEME_META={gold:'#0b0b0a',midnight:'#08080f',glass:'#0a0a0f',chrome:'#141414',white:'#f0f2f5',chromatic:'#0d0e14',liquid:'#111114',rainbow:'#0e0e18'};
     var MESH_COLS={gold:0xd4a574,midnight:0x9090d8,glass:0xa0b8e8,chrome:0xcccccc,white:0x0a84ff,chromatic:0xd4a574,liquid:0xbbbbbb,rainbow:0xff9ff3};
     var EFFORT_STEPS=['low','medium','high','extreme'];
     var ROAST_LABELS=['nice','mild','spicy','savage'];
-    var _theme='gold',_wf='code',_model='sonnet',_effort='medium',_effortIdx=1,_roastLevel=0,_roastIdx=0,_ghConnected=false,_selectedRepo=null,_activeChips={},_ttsOn=false,_allRepos=[],_mesh,_meshRenderer,_meshScene,_meshCam,_msgCount=0,_pendingMsg=null,_currentFile=null,_appInitialized=false;
-
-    /* ═══ BLEND GLOBALS ═══ */
-    var _blendActiveRoomId = null;
-    var _blendPollInterval = null;
-    var _blendRooms = [];
-    var _blendCurrentUserId = 'anonymous';
-    var _blendCurrentUsername = 'Guest';
+    var _theme='gold',_wf='code',_model='sol',_effort='medium',_effortIdx=1,_roastLevel=0,_roastIdx=0,_ghConnected=false,_selectedRepo=null,_activeChips={},_ttsOn=false,_allRepos=[],_mesh,_meshRenderer,_meshScene,_meshCam,_msgCount=0,_pendingMsg=null,_currentFile=null,_appInitialized=false;
+    var _blendActiveRoomId=null,_blendPollInterval=null,_blendRooms=[],_blendCurrentUserId='anonymous',_blendCurrentUsername='Guest';
 
     function setTheme(t){_theme=t;document.body.className='theme-'+t;localStorage.setItem('chrxmaticc_theme',t);document.querySelectorAll('[data-theme]').forEach(function(e){e.classList.toggle('active',e.getAttribute('data-theme')===t)});var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=THEME_META[t]||'#0b0b0a';updateMeshColor(t)}
     (function(){setTheme(localStorage.getItem('chrxmaticc_theme')||'gold')})();
@@ -758,7 +654,6 @@
     function transitionToChat(){var lc=document.getElementById('landEl'),cw=document.getElementById('chatWrap');if(typeof gsap!=='undefined'&&lc){gsap.to(lc,{opacity:0,y:-18,duration:.35,ease:'power2.in',onComplete:function(){lc.classList.add('hidden');showChat()}})}else{if(lc)lc.classList.add('hidden');showChat()}}
     function showChat(){var cw=document.getElementById('chatWrap');if(!cw)return;cw.classList.add('on');if(typeof gsap!=='undefined')gsap.fromTo(cw,{opacity:0,filter:'blur(4px)'},{opacity:1,filter:'blur(0px)',duration:.4,ease:'power2.out'});if(!_appInitialized){initApp();_appInitialized=true}setTimeout(function(){var inp=document.getElementById('userInput');if(_pendingMsg&&inp){inp.value=_pendingMsg;inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,100)+'px';_pendingMsg=null;if(typeof sendMessage==='function')sendMessage()}},200)}
 
-    /* ═══ FIXED: goToLanding creates NEW chat ═══ */
     function goToLanding(){
       if(typeof saveCurrentChat==='function')saveCurrentChat();
       var newId='chat_'+Date.now();
@@ -777,45 +672,13 @@
     }
     window.goToLanding=goToLanding;
 
-    function openGitHubSection(){
-      openSettings();
-      setTimeout(function(){
-        var ghSection = document.getElementById('ghSection');
-        if(ghSection) ghSection.scrollIntoView({behavior:'smooth',block:'start'});
-      }, 100);
-    }
+    function openGitHubSection(){openSettings();setTimeout(function(){var ghSection=document.getElementById('ghSection');if(ghSection)ghSection.scrollIntoView({behavior:'smooth',block:'start'});},100);}
 
     function openPop(id,anchor){closePop('settingsPop');closePop('modelPop');var p=document.getElementById(id);if(!p)return;p.classList.add('on');if(anchor){var r=anchor.getBoundingClientRect(),top=r.top-p.offsetHeight-10;if(top<10)top=r.bottom+10;var left=Math.max(10,Math.min(r.left,window.innerWidth-p.offsetWidth-10));p.style.top=top+'px';p.style.left=left+'px'}setTimeout(function(){document.addEventListener('click',po,{once:true,capture:true})},10)}
     function po(e){if(!e.target.closest('.popover')&&!e.target.closest('#settingsBtn')&&!e.target.closest('#wfPill')&&!e.target.closest('#modelPill')&&!e.target.closest('.gh-pill')){closePop('settingsPop');closePop('modelPop')}}
     function closePop(id){var p=document.getElementById(id);if(p)p.classList.remove('on')}
     function openSettings(){renderBpChips();openPop('settingsPop',document.getElementById('settingsBtn'))}
-    function openModelPop() {
-      renderModelOptions();
-      openPop('modelPop', document.getElementById('modelPill'));
-    }
-
-    function renderModelOptions() {
-      var e = document.getElementById('modelOptions');
-      if (!e) return;
-      e.innerHTML = MODELS.map(function(m) {
-        return '<div class="model-opt' + (m.key === _model ? ' active' : '') +
-          '" onclick="selectModel(\'' + m.key + '\')"><div class="model-opt-name">Chrxmaticc ' +
-          m.label + '</div><div class="model-opt-desc">' + m.desc + '</div></div>';
-      }).join('');
-    }
-
-    function selectModel(key) {
-      _model = key;
-      var m = MODELS.find(function(x) { return x.key === key; }),
-          p = document.getElementById('modelPill'),
-          l = document.getElementById('modelLabel'),
-          b = document.getElementById('lModelBadge');
-      if (l) l.textContent = m ? m.short : key;
-      if (b) b.textContent = 'Chrxmaticc ' + (m ? m.label : key);
-      renderModelOptions();
-      renderBpChips();
-      closePop('modelPop');
-    }
+    function openModelPop(){renderModelOptions();openPop('modelPop',document.getElementById('modelPill'))}
 
     var _wfIdx=0;
     function cycleWorkflow(){_wfIdx=(_wfIdx+1)%WORKFLOWS.length;applyWorkflow(_wfIdx);openSettings()}
@@ -877,271 +740,53 @@
 
     /* ═══ PARTICLE BACKGROUND ═══ */
     (function(){
-      var canvas = document.getElementById('particleCanvas');
-      if(!canvas) return;
-      var ctx = canvas.getContext('2d');
-      var particles = [];
-      var MAX = 50;
-      function resize(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-      resize(); window.addEventListener('resize', resize);
-      function getColor(){ return getComputedStyle(document.body).getPropertyValue('--particle-color').trim() || '#d4a574'; }
-      for(var i=0; i<MAX; i++){
-        particles.push({
-          x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-          size: Math.random()*2.5+0.5, speedX: (Math.random()-0.5)*0.4, speedY: (Math.random()-0.5)*0.4,
-          opacity: Math.random()*0.5+0.1, pulse: Math.random()*Math.PI*2
-        });
-      }
-      function anim(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        var color = getColor();
-        particles.forEach(function(p){
-          p.x += p.speedX; p.y += p.speedY; p.pulse += 0.02;
-          if(p.x<0) p.x=canvas.width; if(p.x>canvas.width) p.x=0;
-          if(p.y<0) p.y=canvas.height; if(p.y>canvas.height) p.y=0;
-          var alpha = p.opacity + Math.sin(p.pulse)*0.2;
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-          ctx.fillStyle = color; ctx.globalAlpha = Math.max(0,Math.min(1,alpha));
-          ctx.fill();
-        });
-        ctx.globalAlpha = 1;
-        requestAnimationFrame(anim);
-      }
+      var canvas=document.getElementById('particleCanvas');
+      if(!canvas)return;
+      var ctx=canvas.getContext('2d');
+      var particles=[];
+      var MAX=50;
+      function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+      resize();window.addEventListener('resize',resize);
+      function getColor(){return getComputedStyle(document.body).getPropertyValue('--particle-color').trim()||'#d4a574';}
+      for(var i=0;i<MAX;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*2.5+0.5,speedX:(Math.random()-0.5)*0.4,speedY:(Math.random()-0.5)*0.4,opacity:Math.random()*0.5+0.1,pulse:Math.random()*Math.PI*2});}
+      function anim(){ctx.clearRect(0,0,canvas.width,canvas.height);var color=getColor();particles.forEach(function(p){p.x+=p.speedX;p.y+=p.speedY;p.pulse+=0.02;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;var alpha=p.opacity+Math.sin(p.pulse)*0.2;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=color;ctx.globalAlpha=Math.max(0,Math.min(1,alpha));ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(anim);}
       anim();
     })();
 
     /* ═══ CURSOR EFFECTS ═══ */
     (function(){
-      var ray = document.getElementById('cursorGodRay');
-      var ring = document.getElementById('cursorRingMaster');
-      if(!ray || !ring) return;
-      var mx=-200, my=-200, rx=-200, ry=-200, ringX=-200, ringY=-200;
-      document.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; });
-      document.addEventListener('mousedown', function(){ ring.classList.add('clicking'); });
-      document.addEventListener('mouseup', function(){ ring.classList.remove('clicking'); });
-      function anim(){
-        rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
-        ray.style.transform = 'translate('+(rx-90)+'px, '+(ry-90)+'px)';
-        ringX += (mx - ringX) * 0.4; ringY += (my - ringY) * 0.4;
-        ring.style.transform = 'translate('+(ringX-20)+'px, '+(ringY-20)+'px)';
-        requestAnimationFrame(anim);
-      }
+      var ray=document.getElementById('cursorGodRay');
+      var ring=document.getElementById('cursorRingMaster');
+      if(!ray||!ring)return;
+      var mx=-200,my=-200,rx=-200,ry=-200,ringX=-200,ringY=-200;
+      document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});
+      document.addEventListener('mousedown',function(){ring.classList.add('clicking');});
+      document.addEventListener('mouseup',function(){ring.classList.remove('clicking');});
+      function anim(){rx+=(mx-rx)*0.15;ry+=(my-ry)*0.15;ray.style.transform='translate('+(rx-90)+'px, '+(ry-90)+'px)';ringX+=(mx-ringX)*0.4;ringY+=(my-ringY)*0.4;ring.style.transform='translate('+(ringX-20)+'px, '+(ringY-20)+'px)';requestAnimationFrame(anim);}
       anim();
     })();
 
     /* ═══ BLEND FUNCTIONS ═══ */
-    function getBlendBaseUrl() { return 'https://chrxmaticc-copliot.vercel.app/api/blend'; }
+    function getBlendBaseUrl(){return 'https://chrxmaticc-copliot.vercel.app/api/blend';}
+    async function createBlendRoom(){var name=prompt('Room name:','My Blend Room');if(!name)return;try{var res=await fetch(getBlendBaseUrl()+'?action=create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name})});var data=await res.json();if(data.room_id){toast('Room created! Invite: '+data.invite_code);loadBlendRooms();joinBlendRoom(data.room_id,data.invite_code);}else{toast('Failed to create room.');}}catch(e){toast('Error creating room.');}}
+    async function loadBlendRooms(){var list=document.getElementById('blendRoomList');if(!list)return;list.innerHTML='';if(_blendRooms.length===0){list.innerHTML='<div style="font-size:11px;color:var(--mut);padding:8px">No rooms yet.</div>';return;}_blendRooms.forEach(function(room){var item=document.createElement('div');item.className='blend-room-item'+(room.id===_blendActiveRoomId?' active':'');item.innerHTML='<span class="blend-room-item-dot" style="background:'+(room.color||'var(--a)')+';box-shadow:0 0 8px '+(room.color||'var(--a)')+'"></span>'+(room.name||'Room');item.onclick=function(){joinBlendRoom(room.id,room.invite_code);};list.appendChild(item);});}
+    function joinBlendRoom(roomId,inviteCode){_blendActiveRoomId=roomId;var panel=document.getElementById('blendPanel');if(panel)panel.classList.add('open');document.getElementById('blendRoomName').textContent='Room';document.getElementById('blendRoomVibe').textContent='🔥 active';document.getElementById('blendMessages').innerHTML='';loadBlendMessages();if(_blendPollInterval)clearInterval(_blendPollInterval);_blendPollInterval=setInterval(loadBlendMessages,2000);if(!_blendRooms.find(function(r){return r.id===roomId;})){_blendRooms.push({id:roomId,name:'Room',invite_code:inviteCode,color:'var(--a)'});loadBlendRooms();}loadBlendRooms();}
+    async function loadBlendMessages(){if(!_blendActiveRoomId)return;try{var res=await fetch(getBlendBaseUrl()+'?action=messages&room_id='+_blendActiveRoomId);var data=await res.json();var container=document.getElementById('blendMessages');if(!container)return;container.innerHTML='';(data.messages||[]).forEach(function(msg){var row=document.createElement('div');row.className='blend-msg'+(msg.role==='assistant'?' ai':'');row.innerHTML='<div class="blend-msg-user">'+(msg.username||'User')+'</div><div class="blend-msg-content">'+msg.content+'</div>';container.appendChild(row);});container.scrollTop=container.scrollHeight;}catch(e){}}
+    async function sendBlendMessage(){var input=document.getElementById('blendInput');if(!input||!_blendActiveRoomId)return;var content=input.value.trim();if(!content)return;input.value='';try{await fetch(getBlendBaseUrl()+'?action=messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({room_id:_blendActiveRoomId,user_id:_blendCurrentUserId,username:_blendCurrentUsername,content:content})});loadBlendMessages();if(content.includes('@Chrxmaticc')){triggerBlendAI();}}catch(e){}}
+    async function triggerBlendAI(){try{var recent=[];var container=document.getElementById('blendMessages');if(container){var msgs=container.querySelectorAll('.blend-msg');msgs.forEach(function(m){var user=m.querySelector('.blend-msg-user')?.textContent||'User';var text=m.querySelector('.blend-msg-content')?.textContent||'';recent.push({username:user,content:text});});}await fetch(getBlendBaseUrl()+'?action=ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({room_id:_blendActiveRoomId,recent_messages:recent})});loadBlendMessages();}catch(e){}}
+    function toggleBlendPanel(){var panel=document.getElementById('blendPanel');if(panel)panel.classList.toggle('open');if(_blendPollInterval&&!panel.classList.contains('open')){clearInterval(_blendPollInterval);_blendPollInterval=null;}else if(panel.classList.contains('open')&&!_blendPollInterval){_blendPollInterval=setInterval(loadBlendMessages,2000);}}
+    function copyBlendInvite(){if(!_blendActiveRoomId)return toast('No active room');var room=_blendRooms.find(function(r){return r.id===_blendActiveRoomId;});if(!room)return toast('Room not found');var link='https://chrxmaticc-copliot.vercel.app/blend?join='+room.invite_code;navigator.clipboard.writeText(link).then(function(){toast('Invite link copied!');});}
+    function renameBlendRoom(){var newName=prompt('New room name:');if(!newName||!_blendActiveRoomId)return;fetch(getBlendBaseUrl()+'?action=rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({room_id:_blendActiveRoomId,name:newName})}).then(function(){loadBlendMessages();});}
+    function deleteBlendRoom(){if(!confirm('Delete this room and all messages?'))return;fetch(getBlendBaseUrl()+'?action=delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({room_id:_blendActiveRoomId})}).then(function(){_blendActiveRoomId=null;document.getElementById('blendPanel').classList.remove('open');clearInterval(_blendPollInterval);_blendPollInterval=null;_blendRooms=_blendRooms.filter(function(r){return r.id!==_blendActiveRoomId;});loadBlendRooms();});}
+    (function(){var params=new URLSearchParams(window.location.search);var joinCode=params.get('join');if(joinCode){fetch(getBlendBaseUrl()+'?action=join&code='+joinCode).then(function(r){return r.json();}).then(function(data){if(data.room){joinBlendRoom(data.room.id,joinCode);toast('Joined Blend room!');}});}})();
 
-    async function createBlendRoom() {
-      var name = prompt('Room name:', 'My Blend Room');
-      if (!name) return;
-      try {
-        var res = await fetch(getBlendBaseUrl() + '?action=create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name })
-        });
-        var data = await res.json();
-        if (data.room_id) {
-          toast('Room created! Invite: ' + data.invite_code);
-          loadBlendRooms();
-          joinBlendRoom(data.room_id, data.invite_code);
-        } else {
-          toast('Failed to create room.');
-        }
-      } catch(e) { toast('Error creating room.'); }
-    }
-
-    async function loadBlendRooms() {
-      // Rooms are stored in local memory; you could fetch user's rooms from a new endpoint later.
-      // For now, we just refresh the list from localStorage or keep track manually.
-      var list = document.getElementById('blendRoomList');
-      if (!list) return;
-      list.innerHTML = '';
-      if (_blendRooms.length === 0) {
-        list.innerHTML = '<div style="font-size:11px;color:var(--mut);padding:8px">No rooms yet.</div>';
-        return;
-      }
-      _blendRooms.forEach(function(room) {
-        var item = document.createElement('div');
-        item.className = 'blend-room-item' + (room.id === _blendActiveRoomId ? ' active' : '');
-        item.innerHTML = '<span class="blend-room-item-dot" style="background:' + (room.color || 'var(--a)') + ';box-shadow:0 0 8px ' + (room.color || 'var(--a)') + '"></span>' + (room.name || 'Room');
-        item.onclick = function() { joinBlendRoom(room.id, room.invite_code); };
-        list.appendChild(item);
-      });
-    }
-
-    function joinBlendRoom(roomId, inviteCode) {
-      _blendActiveRoomId = roomId;
-      var panel = document.getElementById('blendPanel');
-      if (panel) panel.style.display = 'flex';
-      document.getElementById('blendRoomName').textContent = 'Room';
-      document.getElementById('blendRoomVibe').textContent = '🔥 active';
-      document.getElementById('blendMessages').innerHTML = '';
-      // Show owner buttons if current user is owner (you can add logic later)
-      // document.getElementById('blendRenameBtn').style.display = 'inline-block';
-      // document.getElementById('blendDeleteBtn').style.display = 'inline-block';
-      loadBlendMessages();
-      if (_blendPollInterval) clearInterval(_blendPollInterval);
-      _blendPollInterval = setInterval(loadBlendMessages, 2000);
-      // Store room in list if not already
-      if (!_blendRooms.find(function(r) { return r.id === roomId; })) {
-        _blendRooms.push({ id: roomId, name: 'Room', invite_code: inviteCode, color: 'var(--a)' });
-        loadBlendRooms();
-      }
-      loadBlendRooms();
-    }
-
-    async function loadBlendMessages() {
-      if (!_blendActiveRoomId) return;
-      try {
-        var res = await fetch(getBlendBaseUrl() + '?action=messages&room_id=' + _blendActiveRoomId);
-        var data = await res.json();
-        var container = document.getElementById('blendMessages');
-        if (!container) return;
-        container.innerHTML = '';
-        (data.messages || []).forEach(function(msg) {
-          var row = document.createElement('div');
-          row.className = 'blend-msg' + (msg.role === 'assistant' ? ' ai' : '');
-          row.innerHTML = '<div class="blend-msg-user">' + (msg.username || 'User') + '</div><div class="blend-msg-content">' + msg.content + '</div>';
-          container.appendChild(row);
-        });
-        container.scrollTop = container.scrollHeight;
-      } catch(e) {}
-    }
-
-    async function sendBlendMessage() {
-      var input = document.getElementById('blendInput');
-      if (!input || !_blendActiveRoomId) return;
-      var content = input.value.trim();
-      if (!content) return;
-      input.value = '';
-      try {
-        await fetch(getBlendBaseUrl() + '?action=messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            room_id: _blendActiveRoomId,
-            user_id: _blendCurrentUserId,
-            username: _blendCurrentUsername,
-            content: content
-          })
-        });
-        loadBlendMessages();
-        // Trigger AI if @Chrxmaticc is mentioned
-        if (content.includes('@Chrxmaticc')) {
-          triggerBlendAI();
-        }
-      } catch(e) {}
-    }
-
-    async function triggerBlendAI() {
-      try {
-        var recent = [];
-        var container = document.getElementById('blendMessages');
-        if (container) {
-          var msgs = container.querySelectorAll('.blend-msg');
-          msgs.forEach(function(m) {
-            var user = m.querySelector('.blend-msg-user')?.textContent || 'User';
-            var text = m.querySelector('.blend-msg-content')?.textContent || '';
-            recent.push({ username: user, content: text });
-          });
-        }
-        await fetch(getBlendBaseUrl() + '?action=ai', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ room_id: _blendActiveRoomId, recent_messages: recent })
-        });
-        loadBlendMessages();
-      } catch(e) {}
-    }
-
-    function toggleBlendPanel() {
-      var panel = document.getElementById('blendPanel');
-      if (panel) panel.style.display = (panel.style.display === 'flex') ? 'none' : 'flex';
-      if (_blendPollInterval && panel.style.display === 'none') {
-        clearInterval(_blendPollInterval);
-        _blendPollInterval = null;
-      } else if (panel.style.display === 'flex' && !_blendPollInterval) {
-        _blendPollInterval = setInterval(loadBlendMessages, 2000);
-      }
-    }
-
-    function copyBlendInvite() {
-      if (!_blendActiveRoomId) return toast('No active room');
-      var room = _blendRooms.find(function(r) { return r.id === _blendActiveRoomId; });
-      if (!room) return toast('Room not found');
-      var link = 'https://chrxmaticc-copliot.vercel.app/blend?join=' + room.invite_code;
-      navigator.clipboard.writeText(link).then(function() {
-        toast('Invite link copied!');
-      });
-    }
-
-    function renameBlendRoom() {
-      var newName = prompt('New room name:');
-      if (!newName || !_blendActiveRoomId) return;
-      fetch(getBlendBaseUrl() + '?action=rename', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room_id: _blendActiveRoomId, name: newName })
-      }).then(function() { loadBlendMessages(); });
-    }
-
-    function deleteBlendRoom() {
-      if (!confirm('Delete this room and all messages?')) return;
-      fetch(getBlendBaseUrl() + '?action=delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room_id: _blendActiveRoomId })
-      }).then(function() {
-        _blendActiveRoomId = null;
-        document.getElementById('blendPanel').style.display = 'none';
-        clearInterval(_blendPollInterval);
-        _blendPollInterval = null;
-        _blendRooms = _blendRooms.filter(function(r) { return r.id !== _blendActiveRoomId; });
-        loadBlendRooms();
-      });
-    }
-
-    // Auto-join from URL
-    (function() {
-      var params = new URLSearchParams(window.location.search);
-      var joinCode = params.get('join');
-      if (joinCode) {
-        fetch(getBlendBaseUrl() + '?action=join&code=' + joinCode)
-          .then(function(r) { return r.json(); })
-          .then(function(data) {
-            if (data.room) {
-              joinBlendRoom(data.room.id, joinCode);
-              toast('Joined Blend room!');
-            }
-          });
-      }
-    })();
-
-    /* ═══ SUBTLE SOUND EFFECT ═══ */
-    function playBlendChime() {
-      try {
-        var ctx = new (window.AudioContext || window.webkitAudioContext)();
-        var o = ctx.createOscillator();
-        var g = ctx.createGain();
-        o.type = 'sine';
-        o.frequency.setValueAtTime(880, ctx.currentTime);
-        o.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
-        g.gain.setValueAtTime(0.05, ctx.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-        o.connect(g);
-        g.connect(ctx.destination);
-        o.start(ctx.currentTime);
-        o.stop(ctx.currentTime + 0.4);
-      } catch(e) {}
-    }
-    // Play chime when AI responds in Blend
-    var origBlendAI = triggerBlendAI;
-    triggerBlendAI = async function() {
-      await origBlendAI();
-      playBlendChime();
-    };
+    /* ═══ WebGL VIEWER ═══ */
+    function openWebGLViewer(){var panel=document.getElementById('webglPanel');if(!panel)return;panel.classList.add('open');initWebGLScene();}
+    function closeWebGLViewer(){var panel=document.getElementById('webglPanel');if(panel)panel.classList.remove('open');}
+    var webglScene,webglCamera,webglRenderer,webglMesh;
+    function initWebGLScene(){if(typeof THREE==='undefined')return;var wrap=document.getElementById('webglCanvasWrap');if(!wrap||webglRenderer)return;webglScene=new THREE.Scene();webglCamera=new THREE.PerspectiveCamera(45,wrap.clientWidth/wrap.clientHeight,0.1,100);webglCamera.position.set(2,1.5,3);webglCamera.lookAt(0,0,0);webglRenderer=new THREE.WebGLRenderer({antialias:true,alpha:true});webglRenderer.setSize(wrap.clientWidth,wrap.clientHeight);webglRenderer.setClearColor(0x0b0b0a,0);wrap.appendChild(webglRenderer.domElement);var light=new THREE.AmbientLight(0x404060);webglScene.add(light);var dirLight=new THREE.DirectionalLight(0xd4a574,1);dirLight.position.set(5,5,5);webglScene.add(dirLight);var geo=new THREE.IcosahedronGeometry(1.1,2);var edges=new THREE.EdgesGeometry(geo);var mat=new THREE.LineBasicMaterial({color:0xd4a574});webglMesh=new THREE.LineSegments(edges,mat);webglScene.add(webglMesh);var orbitDots=[];var dotGeo=new THREE.SphereGeometry(0.04,8,8);var dotMat=new THREE.MeshBasicMaterial({color:0xd4a574});for(var i=0;i<8;i++){var dot=new THREE.Mesh(dotGeo,dotMat);dot.userData={angle:(Math.PI*2*i)/8,radius:1.6,speed:0.003+Math.random()*0.005,yOffset:(Math.random()-0.5)*1.5};webglScene.add(dot);orbitDots.push(dot);}
+    function animateWebGL(){if(!webglRenderer)return;requestAnimationFrame(animateWebGL);webglMesh.rotation.y+=0.005;webglMesh.rotation.x+=0.002;orbitDots.forEach(function(dot){dot.userData.angle+=dot.userData.speed;dot.position.x=Math.cos(dot.userData.angle)*dot.userData.radius;dot.position.z=Math.sin(dot.userData.angle)*dot.userData.radius;dot.position.y=dot.userData.yOffset+Math.sin(dot.userData.angle*2)*0.3;});webglRenderer.render(webglScene,webglCamera);}
+    animateWebGL();window.addEventListener('resize',function(){if(!webglRenderer||!webglCamera)return;var wrap=document.getElementById('webglCanvasWrap');webglCamera.aspect=wrap.clientWidth/wrap.clientHeight;webglCamera.updateProjectionMatrix();webglRenderer.setSize(wrap.clientWidth,wrap.clientHeight);});}
 
     /* ═══ EXPORTS ═══ */
     window.resetChipsAfterSend=function(){_activeChips={};renderBpChips()}
