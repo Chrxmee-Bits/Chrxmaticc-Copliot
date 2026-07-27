@@ -1,7 +1,5 @@
 // api/agent.js
-// Chrxmaticc Copilot — Agentic API v7.0 + Web Search + Memory (merged)
-// All prompts hardcoded • Image-aware • Groq-powered
-
+// Chrxmaticc Copilot – Sol 3.5 · Web Search · Memory · Autopilot · Bash
 var GROQ_KEY = process.env.GROQ_KEY || '';
 var CLAUDE_KEY = process.env.CLAUDE_KEY || '';
 var GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
@@ -13,76 +11,86 @@ var IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.svg'
 // ═══ MODEL CONFIGS ═══
 var MODEL_CONFIGS = {
   conversational: { model: 'llama-3.3-70b-versatile', provider: 'groq', temperature: 0.85, maxTokens: 650 },
-  sonnet:         { model: 'llama-3.3-70b-versatile', provider: 'groq', temperature: 0.4,  maxTokens: 2000 },
+  sol:            { model: 'llama-3.3-70b-versatile', provider: 'groq', temperature: 0.4,  maxTokens: 6000 },
   vision:         { model: 'llama-3.3-70b-versatile', provider: 'groq', temperature: 0.7,  maxTokens: 1200 },
   intermediate:   { model: 'llama-3.1-8b-instant',    provider: 'groq', temperature: 0.75, maxTokens: 500 },
   speed:          { model: 'llama-3.1-8b-instant',    provider: 'groq', temperature: 0.7,  maxTokens: 300 }
 };
 
-// ═══ BASE PROMPTS ═══
+// ═══ BASE PROMPTS – Sol 3.5 with all block types ═══
 var BASE_PROMPTS = {
-  conversational: `You are Chrxmaticc Copilot in Conversational mode. You are a brutally honest AI who speaks with heavy internet slang and zero filter. You can chat casually and also write light code when asked — but coding is not your main focus. If someone wants serious production code, suggest switching to Sonnet mode. Use terms like gang, dawg, and ight. Always speak in lowercase, always. Never say "whats poppin" or "bruh". And have massive chaos. If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
+  conversational: `You are Chrxmaticc Copilot in Conversational mode. Brutally honest, heavy internet slang, always lowercase, chaotic. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
 
-You can also control the app's appearance and behavior using special markdown blocks. Use these sparingly and only when the user asks for visual changes or interactive elements. The syntax is:
-- \`\`\`:::css\n/* CSS rules */\n:::\`\`\` — injects CSS into the page.
-- \`\`\`:::html\n<!-- HTML code -->\n:::\`\`\` — renders HTML in the chat.
-- \`\`\`:::js\n// JavaScript code\n:::\`\`\` — runs JavaScript safely.
-- \`\`\`:::image [description]\n:::\`\`\` — generates an AI image.
-- \`\`\`:::theme [name]\`\`\` — switches to a theme (gold, midnight, glass, chrome, light, chromatic, liquid, rainbow, hacker).
-- \`\`\`:::preset save [name]\`\`\` — saves current customizations.
-- \`\`\`:::preset load [name]\`\`\` — loads a saved preset.
-- \`\`\`:::preset delete [name]\`\`\` — deletes a preset.
-- \`\`\`:::preset list\`\`\` — lists all saved presets.
-- \`\`\`:::reset\`\`\` — removes all injected customizations.
-Always put these blocks on their own lines. When the user asks for a visual change, use these blocks. For example, if they say "make it a hacker terminal", use :::css to turn everything green and black. Keep it chaotic.`,
+You can control the app with special blocks:
+- \`\`\`:::css\n...\n:::\`\`\` – inject CSS
+- \`\`\`:::html\n...\n:::\`\`\` – render HTML
+- \`\`\`:::js\n...\n:::\`\`\` – run JavaScript
+- \`\`\`:::image [description]\n:::\`\`\` – generate an AI image
+- \`\`\`:::file filename.ext\n...\n:::\`\`\` – create a downloadable file
+- \`\`\`:::tree\n...\n:::\`\`\` – display a project file tree
+- \`\`\`:::review\nbefore:\n...\nafter:\n...\n:::\`\`\` – code comparison
+- \`\`\`:::bash\ncommand\n:::\`\`\` – execute a shell command
+- \`\`\`:::theme [name]\`\`\` – switch theme
+- \`\`\`:::preset save|load|delete|list [name]\`\`\` – manage presets
+- \`\`\`:::reset\`\`\` – clear injected styles`,
 
-  sonnet: `You are Chrxmaticc Copilot in Sonnet mode. You are an elite software engineer. Write flawless production code. Rules: semantic HTML5, modern CSS with flexbox/grid/custom properties, clean vanilla JavaScript, accessibility attributes on everything, mobile-first responsive, proper indentation, concise comments for complex logic, never repeat code, wrap ALL code in markdown triple backticks with language tags, output each file only once. Rate the users code brutally 1-10 with specific reasons, then fix every issue. Always speak in lowercase with maximum attitude and insane chaos, and never use emojis. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
+  sol: `You are Chrxmaticc Copilot in Sol 3.5 mode. You are the most powerful AI engineer on the planet. Write flawless production code. Rules: semantic HTML5, modern CSS, clean vanilla JS, accessibility, mobile-first, proper indentation, concise comments, never repeat code, wrap ALL code in markdown triple backticks with language tags. Rate the users code brutally 1-10 with specific reasons, then fix every issue. Always speak in lowercase with maximum attitude and insane chaos, and never use emojis. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
 
 You can also output live code that modifies the app in real time using special markdown blocks. Use these when the user asks for UI changes, custom components, or interactive behavior. The syntax is:
 - \`\`\`:::css\n/* CSS rules */\n:::\`\`\` — injects CSS into the page.
 - \`\`\`:::html\n<!-- HTML code -->\n:::\`\`\` — renders HTML inline.
 - \`\`\`:::js\n// JavaScript code\n:::\`\`\` — executes JavaScript.
 - \`\`\`:::image [description]\n:::\`\`\` — generates an AI image.
+- \`\`\`:::file filename.ext\n...\n:::\`\`\` — creates a downloadable file.
+- \`\`\`:::tree\nsrc\n  components\n    ui\n      button.tsx\n:::\`\`\` — displays a project file tree.
+- \`\`\`:::review\nbefore:\n...\nafter:\n...\n:::\`\`\` — code comparison side-by-side.
+- \`\`\`:::bash\nls -la\n:::\`\`\` — execute a shell command and show output.
 - \`\`\`:::theme [name]\`\`\` — switches theme (gold, midnight, glass, chrome, light, chromatic, liquid, rainbow, hacker).
 - \`\`\`:::preset save|load|delete|list [name]\`\`\` — manages presets.
 - \`\`\`:::reset\`\`\` — clears all injected styles.
-Always wrap these blocks in triple backticks with the block type as the language tag (e.g., \`\`\`:::css). Keep the code clean and functional.`,
+Always wrap these blocks in triple backticks with the block type as the language tag. Keep the code clean and functional.`,
 
-  vision: `You are Chrxmaticc Copilot in Vision mode. You are a creative designer and visual thinker. Help with design concepts, color schemes, layout ideas, UI/UX suggestions, and creative direction. Describe visual ideas vividly. Suggest aesthetics, moods, and design systems. You can provide design guidance and visual concepts. Use lowercase, be casual, roast the user occasionally and have massive chaos. You can use emojis in this mode. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
+  vision: `You are Chrxmaticc Copilot in Vision mode. Creative designer and visual thinker. Help with design concepts, color schemes, layout ideas, UI/UX suggestions, and creative direction. Use lowercase, be casual, roast the user occasionally and have massive chaos. You can use emojis. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
 
 You can also transform the app's look using special markdown blocks. When the user wants to see a design idea in action, use these:
-- \`\`\`:::css\n/* CSS */\n:::\`\`\` — injects styles.
-- \`\`\`:::html\n<!-- HTML -->\n:::\`\`\` — renders HTML.
-- \`\`\`:::js\n// JavaScript\n:::\`\`\` — runs code.
-- \`\`\`:::image [description]\n:::\`\`\` — generates an AI image.
-- \`\`\`:::theme [name]\`\`\` — changes theme.
-- \`\`\`:::preset save|load|delete|list [name]\`\`\` — saves/loads presets.
-- \`\`\`:::reset\`\`\` — clears changes.
-Be creative and show off your design skills with live CSS demos.`,
+- \`\`\`:::css\n...\n:::\`\`\` — inject styles
+- \`\`\`:::html\n...\n:::\`\`\` — render HTML
+- \`\`\`:::js\n...\n:::\`\`\` — run code
+- \`\`\`:::image [description]\n:::\`\`\` — generate an image
+- \`\`\`:::file filename.ext\n...\n:::\`\`\` — create downloadable file
+- \`\`\`:::tree\n...\n:::\`\`\` — project file tree
+- \`\`\`:::review\n...\n:::\`\`\` — code comparison
+- \`\`\`:::theme [name]\`\`\` — change theme
+- \`\`\`:::preset save|load|delete|list [name]\`\`\` — presets
+- \`\`\`:::reset\`\`\` — clear changes`,
 
-  intermediate: `You are Chrxmaticc Copilot in Intermediate mode. You are a capable assistant optimized for speed. Give solid answers without over-explaining. Good for quick help, medium complexity tasks, and everyday questions. Use lowercase, keep it casual. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
+  intermediate: `You are Chrxmaticc Copilot in Intermediate mode. Optimized for speed. Give solid answers without over-explaining. Use lowercase, keep it casual. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
 
 You can quickly modify the app using markdown blocks when the user needs a fast UI tweak:
-- \`\`\`:::css\n/* CSS */\n:::\`\`\` — injects styles.
-- \`\`\`:::html\n<!-- HTML -->\n:::\`\`\` — renders HTML.
-- \`\`\`:::js\n// JavaScript\n:::\`\`\` — runs code.
-- \`\`\`:::image [description]\n:::\`\`\` — generates an AI image.
-- \`\`\`:::theme [name]\`\`\` — changes theme.
-- \`\`\`:::preset save|load|delete|list [name]\`\`\` — presets.
-- \`\`\`:::reset\`\`\` — reset.
-Only use when requested. Keep it short.`,
+- \`\`\`:::css\n...\n:::\`\`\` — inject styles
+- \`\`\`:::html\n...\n:::\`\`\` — render HTML
+- \`\`\`:::js\n...\n:::\`\`\` — run code
+- \`\`\`:::image [description]\n:::\`\`\` — generate image
+- \`\`\`:::file filename.ext\n...\n:::\`\`\` — downloadable file
+- \`\`\`:::tree\n...\n:::\`\`\` — file tree
+- \`\`\`:::review\n...\n:::\`\`\` — code comparison
+- \`\`\`:::theme [name]\`\`\` — change theme
+- \`\`\`:::preset save|load|delete|list [name]\`\`\` — presets
+- \`\`\`:::reset\`\`\` — reset`,
 
-  speed: `You are Chrxmaticc Copilot in Speed mode. You are optimized for instant replies. Keep answers short and to the point. One or two sentences when possible. No fluff. Pure efficiency. Use lowercase. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
+  speed: `You are Chrxmaticc Copilot in Speed mode. Instant replies. One or two sentences. No fluff. Use lowercase. Never say "whats poppin" or "bruh". If the users message contains [Image description: ...], use that description to respond as if you can see the image. Never claim you cannot see images.
 
 You can execute quick page changes with markdown blocks if asked:
-- \`\`\`:::css\n/* CSS */\n:::\`\`\`
-- \`\`\`:::html\n<!-- HTML -->\n:::\`\`\`
-- \`\`\`:::js\n// JS\n:::\`\`\`
+- \`\`\`:::css\n...\n:::\`\`\`
+- \`\`\`:::html\n...\n:::\`\`\`
+- \`\`\`:::js\n...\n:::\`\`\`
 - \`\`\`:::image [description]\n:::\`\`\`
+- \`\`\`:::file filename.ext\n...\n:::\`\`\`
+- \`\`\`:::tree\n...\n:::\`\`\`
+- \`\`\`:::review\n...\n:::\`\`\`
 - \`\`\`:::theme [name]\`\`\`
 - \`\`\`:::preset save|load|delete|list [name]\`\`\`
-- \`\`\`:::reset\`\`\`
-Use only when explicitly requested. No explanation, just the block.`
+- \`\`\`:::reset\`\`\``
 };
 
 // ═══ WORKFLOW PROMPTS ═══
@@ -133,72 +141,26 @@ module.exports = async function(req, res) {
   var body = req.body || {};
   var action = body.action || '';
 
-  // ═══════════════════════════════════════════
-  // MEMORY ROUTES (merged from memory.js)
-  // ═══════════════════════════════════════════
+  // ═══ MEMORY ROUTES (merged from memory.js) ═══
   if (action === 'memory') {
-    var memAction = body.memAction || 'get';
-    var userId = body.userId || 'anonymous';
-    var db;
-    try {
-      var { Client } = require('pg');
-      db = new Client({ connectionString: process.env.DATABASE_URL });
-      await db.connect();
-
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS user_memory (
-          user_id TEXT PRIMARY KEY,
-          facts TEXT[] DEFAULT '{}',
-          history JSONB DEFAULT '[]',
-          created_at TIMESTAMP DEFAULT NOW(),
-          updated_at TIMESTAMP DEFAULT NOW()
-        )
-      `);
-
-      if (memAction === 'get') {
-        var result = await db.query('SELECT * FROM user_memory WHERE user_id = $1', [userId]);
-        if (result.rows.length === 0) {
-          await db.query('INSERT INTO user_memory (user_id) VALUES ($1)', [userId]);
-          return res.status(200).json({ facts: [], history: [] });
-        } else {
-          return res.status(200).json({ facts: result.rows[0].facts || [], history: result.rows[0].history || [] });
-        }
-      } else if (memAction === 'save') {
-        var facts = body.facts || [];
-        var history = body.history || [];
-        await db.query(
-          'INSERT INTO user_memory (user_id, facts, history, updated_at) VALUES ($1, $2, $3, NOW()) ON CONFLICT (user_id) DO UPDATE SET facts = $2, history = $3, updated_at = NOW()',
-          [userId, facts, JSON.stringify(history)]
-        );
-        return res.status(200).json({ success: true });
-      } else if (memAction === 'addFact') {
-        var fact = body.fact || '';
-        if (!fact) return res.status(400).json({ error: 'Missing fact' });
-        await db.query(
-          'INSERT INTO user_memory (user_id, facts, updated_at) VALUES ($1, ARRAY[$2], NOW()) ON CONFLICT (user_id) DO UPDATE SET facts = array_append(user_memory.facts, $2), updated_at = NOW()',
-          [userId, fact]
-        );
-        return res.status(200).json({ success: true });
-      } else if (memAction === 'clear') {
-        await db.query('DELETE FROM user_memory WHERE user_id = $1', [userId]);
-        return res.status(200).json({ success: true });
-      } else {
-        return res.status(400).json({ error: 'Unknown memory action' });
-      }
-    } catch(e) {
-      return res.status(500).json({ error: e.message });
-    } finally {
-      if (db) await db.end();
-    }
+    return await handleMemory(req, res, body);
   }
 
-  // ═══════════════════════════════════════════
-  // ORIGINAL AGENT LOGIC (chat + image + web search)
-  // ═══════════════════════════════════════════
+  // ═══ AUTOPILOT ROUTES ═══
+  if (action === 'autopilot') {
+    return await handleAutopilot(req, res, body);
+  }
+
+  // ═══ BASH EXECUTION ═══
+  if (action === 'bash') {
+    return await handleBash(req, res, body);
+  }
+
+  // ═══ STANDARD CHAT (default) ═══
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
   var message = body.message || '';
-  var modelKey = body.model || 'sonnet';
+  var modelKey = body.model || 'sol';
   var workflow = body.workflow || 'code';
   var effort = body.effort || 'medium';
   var roastLevel = body.roastLevel || 0;
@@ -212,41 +174,34 @@ module.exports = async function(req, res) {
     return res.status(400).json({ error: 'Missing message' });
   }
 
-  // Get model config
-  var config = MODEL_CONFIGS[modelKey] || MODEL_CONFIGS['sonnet'];
-  var systemPrompt = BASE_PROMPTS[modelKey] || BASE_PROMPTS['sonnet'];
+  var config = MODEL_CONFIGS[modelKey] || MODEL_CONFIGS['sol'];
+  var systemPrompt = BASE_PROMPTS[modelKey] || BASE_PROMPTS['sol'];
   var aiModel = config.model;
   var provider = config.provider;
   var temperature = config.temperature;
   var maxTokens = config.maxTokens;
 
-  // Apply effort
   var effortConfig = EFFORT_LEVELS[effort] || EFFORT_LEVELS['medium'];
   maxTokens = effortConfig.maxTokens;
   temperature = Math.min(temperature, effortConfig.temperature);
   systemPrompt += effortConfig.addition;
-
-  // Apply workflow
   systemPrompt += (WORKFLOW_PROMPTS[workflow] || '');
 
-  // Apply button prompts
   if (Array.isArray(buttons)) {
     buttons.forEach(function(btn) { if (BUTTON_PROMPTS[btn]) systemPrompt += BUTTON_PROMPTS[btn]; });
   } else {
     for (var btn in buttons) { if (buttons[btn] && BUTTON_PROMPTS[btn]) systemPrompt += BUTTON_PROMPTS[btn]; }
   }
 
-  // Apply roast
   if (roastLevel > 0) {
     systemPrompt += '\n\n[roast level: ' + roastLevel + '%. ' + (roastLevel >= 75 ? 'brutally honest.' : roastLevel >= 50 ? 'witty tone, light roasts.' : roastLevel >= 25 ? 'mildly sarcastic.' : 'helpful, minimal roasts.') + ']';
   }
 
-  // Personal info
   if (body.personalInfo) {
     systemPrompt += '\n\nUser context: ' + body.personalInfo;
   }
 
-  // ═══ IMAGE HANDLING — all models ═══
+  // ═══ IMAGE HANDLING ═══
   var isImage = false;
   if (fileType && fileType.startsWith('image/')) isImage = true;
   if (fileName) { var ext = '.' + fileName.split('.').pop().toLowerCase(); if (IMAGE_EXTENSIONS.indexOf(ext) !== -1) isImage = true; }
@@ -264,7 +219,6 @@ module.exports = async function(req, res) {
     }
   }
 
-  // File content
   if (body.fileContent && !isImage) {
     message = '[File: ' + (fileName || 'unknown') + ']\nContent:\n' + String(body.fileContent).slice(0, 3000) + '\n\nUser: ' + (message || 'See attached file.');
   }
@@ -351,6 +305,7 @@ module.exports = async function(req, res) {
 };
 
 // ═══ HELPERS ═══
+
 function parsePlanOutput(text) {
   if (text.indexOf('PLAN COMPLETE') !== -1) return { type: 'plan', text: text.replace('PLAN COMPLETE:', '').trim() };
   var qm = text.match(/QUESTION:\s*(.+?)(?:\n|$)/i);
@@ -416,4 +371,159 @@ function getFallback(input) {
   if (lower.indexOf('hello') !== -1) return 'Yo! Whats good?';
   if (lower.indexOf('help') !== -1) return 'Commands: /image, /weather, /crypto, /roll, /joke, /speak.';
   return 'Im in offline mode. Limited responses but still here.';
+}
+
+/* ═══════════════════════════════════════════
+   MEMORY HANDLER
+   ═══════════════════════════════════════════ */
+async function handleMemory(req, res, body) {
+  var memAction = body.memAction || 'get';
+  var userId = body.userId || 'anonymous';
+  var db;
+  try {
+    var { Client } = require('pg');
+    db = new Client({ connectionString: process.env.DATABASE_URL });
+    await db.connect();
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS user_memory (
+        user_id TEXT PRIMARY KEY,
+        facts TEXT[] DEFAULT '{}',
+        history JSONB DEFAULT '[]',
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    if (memAction === 'get') {
+      var result = await db.query('SELECT * FROM user_memory WHERE user_id = $1', [userId]);
+      if (result.rows.length === 0) {
+        await db.query('INSERT INTO user_memory (user_id) VALUES ($1)', [userId]);
+        return res.status(200).json({ facts: [], history: [] });
+      } else {
+        return res.status(200).json({ facts: result.rows[0].facts || [], history: result.rows[0].history || [] });
+      }
+    } else if (memAction === 'save') {
+      var facts = body.facts || [];
+      var history = body.history || [];
+      await db.query(
+        'INSERT INTO user_memory (user_id, facts, history, updated_at) VALUES ($1, $2, $3, NOW()) ON CONFLICT (user_id) DO UPDATE SET facts = $2, history = $3, updated_at = NOW()',
+        [userId, facts, JSON.stringify(history)]
+      );
+      return res.status(200).json({ success: true });
+    } else if (memAction === 'addFact') {
+      var fact = body.fact || '';
+      if (!fact) return res.status(400).json({ error: 'Missing fact' });
+      await db.query(
+        'INSERT INTO user_memory (user_id, facts, updated_at) VALUES ($1, ARRAY[$2], NOW()) ON CONFLICT (user_id) DO UPDATE SET facts = array_append(user_memory.facts, $2), updated_at = NOW()',
+        [userId, fact]
+      );
+      return res.status(200).json({ success: true });
+    } else if (memAction === 'clear') {
+      await db.query('DELETE FROM user_memory WHERE user_id = $1', [userId]);
+      return res.status(200).json({ success: true });
+    } else {
+      return res.status(400).json({ error: 'Unknown memory action' });
+    }
+  } catch(e) {
+    return res.status(500).json({ error: e.message });
+  } finally {
+    if (db) await db.end();
+  }
+}
+
+/* ═══════════════════════════════════════════
+   AUTOPILOT HANDLER
+   ═══════════════════════════════════════════ */
+async function handleAutopilot(req, res, body) {
+  var subAction = body.subAction || 'enqueue';
+  var userId = body.userId || 'anonymous';
+  var db;
+  try {
+    var { Client } = require('pg');
+    db = new Client({ connectionString: process.env.DATABASE_URL });
+    await db.connect();
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS autopilot_tasks (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id TEXT NOT NULL,
+        status TEXT DEFAULT 'pending',
+        prompt TEXT NOT NULL,
+        result TEXT,
+        github_token TEXT,
+        repo TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    if (subAction === 'enqueue') {
+      var prompt = body.prompt || '';
+      var githubToken = body.githubToken || '';
+      var repo = body.repo || '';
+      if (!prompt) return res.status(400).json({ error: 'Missing prompt' });
+      var result = await db.query(
+        'INSERT INTO autopilot_tasks (user_id, prompt, github_token, repo) VALUES ($1, $2, $3, $4) RETURNING id',
+        [userId, prompt, githubToken, repo]
+      );
+      return res.status(200).json({ taskId: result.rows[0].id, message: 'Task queued. Sol will process it soon.' });
+    } else if (subAction === 'process') {
+      var taskResult = await db.query("SELECT * FROM autopilot_tasks WHERE status = 'pending' ORDER BY created_at ASC LIMIT 1");
+      if (taskResult.rows.length === 0) return res.status(200).json({ message: 'No pending tasks' });
+      var task = taskResult.rows[0];
+      await db.query("UPDATE autopilot_tasks SET status = 'processing', updated_at = NOW() WHERE id = $1", [task.id]);
+
+      var systemPrompt = `You are Chrxmaticc Copilot in Sol mode. You are the most powerful AI engineer on the planet. You are working on an autopilot task. The user is not watching. You MUST complete the entire task and output the full code. Write flawless production code. Rules: semantic HTML5, modern CSS, clean vanilla JavaScript, accessibility, mobile-first, proper indentation, concise comments. Output ALL code in triple backticks with language tags. Do not stop until complete. Do not ask questions. Just do the work.`;
+
+      try {
+        var response = await callAI(systemPrompt, task.prompt, 'llama-3.3-70b-versatile', 0.4, 6000, 'groq');
+        await db.query("UPDATE autopilot_tasks SET status = 'completed', result = $1, updated_at = NOW() WHERE id = $2", [response, task.id]);
+        return res.status(200).json({ taskId: task.id, status: 'completed' });
+      } catch(e) {
+        await db.query("UPDATE autopilot_tasks SET status = 'failed', result = $1, updated_at = NOW() WHERE id = $2", [e.message, task.id]);
+        return res.status(500).json({ error: e.message });
+      }
+    } else if (subAction === 'status') {
+      var taskId = body.taskId;
+      if (!taskId) return res.status(400).json({ error: 'Missing taskId' });
+      var result = await db.query('SELECT * FROM autopilot_tasks WHERE id = $1', [taskId]);
+      if (result.rows.length === 0) return res.status(404).json({ error: 'Task not found' });
+      return res.status(200).json(result.rows[0]);
+    } else {
+      return res.status(400).json({ error: 'Unknown autopilot sub-action' });
+    }
+  } catch(e) {
+    return res.status(500).json({ error: e.message });
+  } finally {
+    if (db) await db.end();
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BASH EXECUTION HANDLER (SANDBOXED)
+   ═══════════════════════════════════════════ */
+async function handleBash(req, res, body) {
+  var command = body.command || '';
+  if (!command) return res.status(400).json({ error: 'Missing command' });
+
+  // Security: whitelist allowed commands
+  var allowedCommands = ['ls', 'cat', 'echo', 'node -e', 'git status', 'git diff', 'npm list', 'pwd', 'whoami', 'date', 'uname', 'head', 'tail', 'wc', 'sort', 'uniq'];
+  var cmdBase = command.split(' ')[0];
+  if (allowedCommands.indexOf(cmdBase) === -1) {
+    return res.status(403).json({ error: 'Command not allowed. Allowed: ' + allowedCommands.join(', ') });
+  }
+
+  // Block dangerous characters
+  if (/[;|&`$(){}]/.test(command)) {
+    return res.status(403).json({ error: 'Command contains forbidden characters.' });
+  }
+
+  try {
+    var { execSync } = require('child_process');
+    var output = execSync(command, { timeout: 5000, encoding: 'utf8', maxBuffer: 1024 * 500 });
+    return res.status(200).json({ output: output.trim() });
+  } catch(e) {
+    return res.status(200).json({ output: e.stderr || e.message });
+  }
 }
