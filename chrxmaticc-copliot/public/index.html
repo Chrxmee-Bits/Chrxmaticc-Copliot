@@ -2359,19 +2359,19 @@
         }},
         { icon: "🔔", name: "Notifications", desc: "Get notified when something happens.", cls: "col-span-2", bg: function() {
           var bg = document.createElement('div'); bg.className = 'bg-animated-list';
-          ['New message from manguns', 'axitel invited you to Blend', 'Commit pushed to main', 'Deployment succeeded', 'New star on Copilot repo'].forEach(function(t) {
+          ['your PR is solved.', 'i pushed the commit for you lil bro', 'made a new branch.', 'deploy succeeded, good job.', 'i checked your api and it failed. ggs'].forEach(function(t) {
             var el = document.createElement('div'); el.className = 'animated-item';
             el.innerHTML = '<span>🔔</span><span>' + t + '</span>'; bg.appendChild(el);
           }); return bg;
         }},
-        { icon: "🔗", name: "Integrations", desc: "100+ integrations supported.", cls: "col-span-2", bg: function() {
+        { icon: "🔗", name: "Integrations", desc: "3+ integrations supported.", cls: "col-span-2", bg: function() {
           var bg = document.createElement('div'); bg.className = 'bg-beam';
           for (var i = 0; i < 18; i++) { var node = document.createElement('div'); node.className = 'beam-node'; bg.appendChild(node); }
           return bg;
         }},
         { icon: "📅", name: "Calendar", desc: "Filter files by date.", cls: "col-span-1", bg: function() {
           var bg = document.createElement('div'); bg.className = 'bg-calendar';
-          bg.innerHTML = '<div class="calendar-header"><span>May 2022</span></div>';
+          bg.innerHTML = '<div class="calendar-header"><span>July 2026</span></div>';
           var g = document.createElement('div'); g.className = 'calendar-grid';
           ['Mo','Tu','We','Th','Fr','Sa','Su'].forEach(function(d) { var cell = document.createElement('div'); cell.className = 'calendar-day'; cell.textContent = d; g.appendChild(cell); });
           for (var i = 0; i < 6; i++) g.appendChild(document.createElement('div'));
@@ -2394,15 +2394,15 @@
       output.innerHTML = '<div class="terminal-header"><div class="terminal-dot red"></div><div class="terminal-dot yellow"></div><div class="terminal-dot green"></div><span class="terminal-title">sol@chrxmaticc — bash</span></div><div id="termOutput"></div>';
       var termOut = document.getElementById('termOutput');
       var lines = [
-        { text: '> pnpm dlx shadcn@latest init', color: '' },
-        { text: '✔ Preflight checks.', color: 'green' },
-        { text: '✔ Verifying framework. Found Next.js.', color: 'green' },
-        { text: '✔ Validating Tailwind CSS.', color: 'green' },
-        { text: '✔ Writing components.json.', color: 'green' },
-        { text: '✔ Checking registry.', color: 'green' },
-        { text: '✔ Installing dependencies.', color: 'green' },
-        { text: 'ℹ Updated 1 file:', color: 'blue', extra: '  - lib/utils.ts' },
-        { text: 'Success! Project initialized.', color: 'muted' }
+        { text: '> npm install chrxmaticc-copliot', color: '' },
+        { text: '✔ checking apis. Verified! ✔', color: 'green' },
+        { text: '✔ api is active and running.', color: 'green' },
+        { text: '✔ message recieved from api: yo chrxmaticc copilot is tuff bro.', color: 'green' },
+        { text: '✔ updating memory.json.', color: 'green' },
+        { text: '✔ offically updated the chat memory of the message.', color: 'green' },
+        { text: '✔ checking memory.', color: 'green' },
+        { text: 'configured & updated memory file file:', color: 'blue', extra: '  - memory/memory.json' },
+        { text: 'success, memory and api is done.', color: 'muted' }
       ];
       var idx = 0, charIdx = 0, currentLineEl = null;
       function typeLine(obj) {
