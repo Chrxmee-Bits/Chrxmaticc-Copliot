@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════
-   chrx-markdown.js — Live Code Execution v1.1
-   :::css :::html :::js :::theme :::preset :::reset :::image :::file :::tree :::review :::bash
+   chrx-markdown.js — Live Code Execution v1.2
+   :::css :::html :::js :::theme :::preset :::reset
+   :::image :::file :::tree :::review :::bash :::terminal
    ═══════════════════════════════════════════ */
 
 var CHRX_PRESETS = {};
@@ -28,60 +29,69 @@ function parseChrxMarkdown(text) {
 }
 
 function executeChrxBlock(block) {
+  var result;
   switch (block.type) {
     case 'theme':
       var themeMap = { gold: 'gold', midnight: 'midnight', glass: 'glass', chrome: 'chrome', white: 'white', light: 'white', chromatic: 'chromatic', liquid: 'liquid', rainbow: 'rainbow', hacker: 'hacker' };
       var t = themeMap[block.param] || block.param || 'gold';
       if (typeof setTheme === 'function') setTheme(t);
-      return { html: (typeof getEmojiHTML === 'function' ? getEmojiHTML(':geto:') : '') + ' Theme: <strong>' + t + '</strong>', type: 'system' };
-    
+      result = { html: (typeof getEmojiHTML === 'function' ? getEmojiHTML(':geto:') : '') + ' Theme: <strong>' + t + '</strong>', type: 'system' };
+      break;
+
     case 'css':
       injectCSS(block.content);
-      return { html: '✨ CSS injected (' + block.content.length + ' chars)', type: 'system' };
-    
+      result = { html: '✨ CSS injected (' + block.content.length + ' chars)', type: 'system' };
+      break;
+
     case 'html':
-      return { html: '<div class="chrx-html-block" style="border-radius:12px;overflow:hidden;margin:8px 0">' + block.content + '</div>', type: 'html' };
-    
+      result = { html: '<div class="chrx-html-block" style="border-radius:12px;overflow:hidden;margin:8px 0">' + block.content + '</div>', type: 'html' };
+      break;
+
     case 'js':
-      // Block dangerous operations
       var blocked = /\bfetch\b|\bXMLHttpRequest\b|\blocalStorage\b|\bdocument\.cookie\b|\bwindow\.location\b|\beval\b|\bFunction\b/i;
       if (blocked.test(block.content)) {
-        return { html: '🔒 Blocked for safety — no fetch, localStorage, or redirects allowed in :::js', type: 'error' };
+        result = { html: '🔒 Blocked for safety — no fetch, localStorage, or redirects allowed in :::js', type: 'error' };
+      } else {
+        try {
+          var jsResult = new Function('"use strict";' + block.content)();
+          result = { html: '✅ JS executed' + (jsResult !== undefined ? ': ' + String(jsResult).slice(0, 100) : ''), type: 'system' };
+        } catch(e) {
+          result = { html: '❌ JS Error: ' + e.message, type: 'error' };
+        }
       }
-      try {
-        var result = new Function('"use strict";' + block.content)();
-        return { html: '✅ JS executed' + (result !== undefined ? ': ' + String(result).slice(0, 100) : ''), type: 'system' };
-      } catch(e) {
-        return { html: '❌ JS Error: ' + e.message, type: 'error' };
-      }
-    
+      break;
+
     case 'preset':
       var parts = (block.param || '').split(' ');
       if (parts[0] === 'save' && parts[1]) {
         CHRX_PRESETS[parts[1]] = INJECTED_STYLES.join('\n');
         localStorage.setItem('chrx_presets', JSON.stringify(CHRX_PRESETS));
-        return { html: '💾 Preset <strong>' + parts[1] + '</strong> saved', type: 'system' };
+        result = { html: '💾 Preset <strong>' + parts[1] + '</strong> saved', type: 'system' };
       } else if (parts[0] === 'load' && parts[1] && CHRX_PRESETS[parts[1]]) {
         injectCSS(CHRX_PRESETS[parts[1]]);
-        return { html: '📂 Preset <strong>' + parts[1] + '</strong> loaded', type: 'system' };
+        result = { html: '📂 Preset <strong>' + parts[1] + '</strong> loaded', type: 'system' };
       } else if (parts[0] === 'delete' && parts[1]) {
         delete CHRX_PRESETS[parts[1]];
         localStorage.setItem('chrx_presets', JSON.stringify(CHRX_PRESETS));
-        return { html: '🗑️ Preset <strong>' + parts[1] + '</strong> deleted', type: 'system' };
+        result = { html: '🗑️ Preset <strong>' + parts[1] + '</strong> deleted', type: 'system' };
       } else if (parts[0] === 'list') {
         var names = Object.keys(CHRX_PRESETS);
-        return { html: '📋 Presets: ' + (names.length ? names.join(', ') : 'none'), type: 'system' };
+        result = { html: '📋 Presets: ' + (names.length ? names.join(', ') : 'none'), type: 'system' };
+      } else {
+        result = { html: '❌ Usage: :::preset save|load|delete|list [name]', type: 'error' };
       }
-      return { html: '❌ Usage: :::preset save|load|delete|list [name]', type: 'error' };
-    
+      break;
+
     case 'reset':
       resetAllInjections();
-      return { html: '🔄 All customizations cleared ' + (typeof getEmojiHTML === 'function' ? getEmojiHTML(':geto:') : ''), type: 'system' };
+      result = { html: '🔄 All customizations cleared ' + (typeof getEmojiHTML === 'function' ? getEmojiHTML(':geto:') : ''), type: 'system' };
+      break;
 
     case 'image':
       var prompt = (block.param ? block.param + ' ' : '') + block.content;
       var imgUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt.trim());
-      return { html: '<img src="' + imgUrl + '" alt="' + prompt + '" style="width:100%;max-width:512px;border-radius:16px;margin:8px 0;" loading="lazy">', type: 'html' };
+      result = { html: '<img src="' + imgUrl + '" alt="' + prompt + '" style="width:100%;max-width:512px;border-radius:16px;margin:8px 0;" loading="lazy">', type: 'html' };
+      break;
 
     case 'file':
       var filename = block.param || 'download.txt';
@@ -92,7 +102,7 @@ function executeChrxBlock(block) {
       var blob = new Blob([block.content], { type: mime });
       var url = URL.createObjectURL(blob);
       var sizeKB = (blob.size / 1024).toFixed(1);
-      return {
+      result = {
         html: '<div style="display:flex;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:14px 18px;margin:8px 0;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.2)">' +
           '<div style="font-size:28px;">📦</div>' +
           '<div style="flex:1;min-width:0">' +
@@ -103,9 +113,9 @@ function executeChrxBlock(block) {
         '</div>',
         type: 'html'
       };
+      break;
 
     case 'tree':
-      // Parse indented tree text into nested object, then render
       var lines = block.content.split('\n').filter(function(l) { return l.trim(); });
       var root = { name: 'root', type: 'folder', children: [] };
       var stack = [{ node: root, indent: -1 }];
@@ -128,7 +138,8 @@ function executeChrxBlock(block) {
         html += '</ul>';
         return html;
       }
-      return { html: '<div style="background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:12px 16px;margin:8px 0;font-family:monospace;font-size:13px;">' + renderTree(root.children) + '</div>', type: 'html' };
+      result = { html: '<div style="background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:12px 16px;margin:8px 0;font-family:monospace;font-size:13px;">' + renderTree(root.children) + '</div>', type: 'html' };
+      break;
 
     case 'review':
       var beforeMatch = block.content.match(/(?:^|\n)before:\n([\s\S]*?)(?:\nafter:|$)/i);
@@ -136,43 +147,100 @@ function executeChrxBlock(block) {
       var beforeCode = beforeMatch ? beforeMatch[1].trim() : '';
       var afterCode = afterMatch ? afterMatch[1].trim() : '';
       var reviewId = 'review-' + Math.random().toString(36).slice(2,8);
-      // Return placeholder; the actual rendering will happen after DOM insertion via the script
-      return {
-        html: '<div id="' + reviewId + '" class="code-comparison" style="display:flex;gap:1rem;flex-wrap:wrap;margin:8px 0;"></div><script>(function(){var b=' + JSON.stringify(beforeCode) + ',a=' + JSON.stringify(afterCode) + ';var c=document.getElementById(\'' + reviewId + '\');function r(code,title,badge){var p=document.createElement("div");p.className="code-panel";p.innerHTML=\'<div class="panel-header"><span>\'+title+\'</span><span class="panel-badge">\'+badge+\'</span></div><div class="code-content"><pre>\'+code.replace(/</g,"&lt;").replace(/>/g,"&gt;")+\'</pre></div>\';c.appendChild(p);}r(b,"Before","Original");r(a,"After","Refactored");})();</script>',
-        type: 'html'
+      result = {
+        html: '<div id="' + reviewId + '" class="code-comparison" style="display:flex;gap:1rem;flex-wrap:wrap;margin:8px 0;"></div>',
+        type: 'html',
+        onRender: function() {
+          var container = document.getElementById(reviewId);
+          if (!container) return;
+          function renderPanel(code, title, badge) {
+            var panel = document.createElement('div');
+            panel.className = 'code-panel';
+            panel.innerHTML = '<div class="panel-header"><span>' + title + '</span><span class="panel-badge">' + badge + '</span></div><div class="code-content"><pre>' + code.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre></div>';
+            container.appendChild(panel);
+          }
+          renderPanel(beforeCode, 'Before', 'Original');
+          renderPanel(afterCode, 'After', 'Refactored');
+        }
       };
+      break;
 
     case 'bash':
       var command = block.param || block.content.trim();
       if (!command) return { html: '❌ No command specified', type: 'error' };
-      // Show command and placeholder output
       var bashId = 'bash-' + Math.random().toString(36).slice(2,8);
-      // We'll fire an async fetch to the API and update the output
-      setTimeout(function() {
-        var container = document.getElementById(bashId);
-        if (!container) return;
-        fetch('https://chrxmaticc-copliot.vercel.app/api/agent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'bash', command: command })
-        }).then(function(r) { return r.json(); }).then(function(d) {
-          var out = d.output || d.error || 'No output';
-          container.innerHTML = '<div style="color:#50fa7b;white-space:pre-wrap;font-family:monospace;">' + out.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
-        }).catch(function() {
-          container.innerHTML = '<div style="color:#ff453a;">Failed to execute command.</div>';
-        });
-      }, 50);
-      return {
+      result = {
         html: '<div style="background:#0d0d0d;border:1px solid #00ff41;border-radius:12px;padding:12px 16px;margin:8px 0;font-family:monospace;font-size:13px;color:#00ff41;">' +
           '<div style="color:#6272a4;">$ ' + command.replace(/</g,'&lt;') + '</div>' +
           '<div id="' + bashId + '" style="margin-top:8px;color:#50fa7b;">Executing...</div>' +
         '</div>',
-        type: 'html'
+        type: 'html',
+        onRender: function() {
+          var container = document.getElementById(bashId);
+          if (!container) return;
+          fetch('https://chrxmaticc-copliot.vercel.app/api/agent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'bash', command: command })
+          }).then(function(r) { return r.json(); }).then(function(d) {
+            var out = d.output || d.error || 'No output';
+            container.innerHTML = '<div style="color:#50fa7b;white-space:pre-wrap;font-family:monospace;">' + out.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+          }).catch(function() {
+            container.innerHTML = '<div style="color:#ff453a;">Failed to execute command.</div>';
+          });
+        }
       };
-    
+      break;
+
+    case 'terminal':
+      var termId = 'term-' + Math.random().toString(36).slice(2,8);
+      result = {
+        html: '<div id="' + termId + '" class="chrx-terminal" style="background:#0d0d0d;border:1px solid #00ff41;border-radius:12px;padding:12px;font-family:monospace;font-size:13px;color:#00ff41;margin:8px 0;">' +
+          '<div class="terminal-output" style="max-height:300px;overflow-y:auto;white-space:pre-wrap;margin-bottom:8px;min-height:100px;">' +
+          '<span style="color:#6272a4;">chrxmaticc@sol:~$ </span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;">' +
+          '<span style="color:#00ff41;margin-right:4px;">$</span>' +
+          '<input type="text" class="terminal-input" style="flex:1;background:transparent;border:none;outline:none;color:#00ff41;font-family:inherit;font-size:inherit;caret-color:#00ff41;" placeholder="type a command..." autofocus>' +
+          '</div>' +
+        '</div>',
+        type: 'html',
+        onRender: function() {
+          var container = document.getElementById(termId);
+          if (!container) return;
+          var input = container.querySelector('.terminal-input');
+          var output = container.querySelector('.terminal-output');
+          if (!input || !output) return;
+          input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              var cmd = input.value.trim();
+              if (!cmd) return;
+              output.innerHTML += '<div><span style="color:#6272a4;">$ ' + cmd + '</span></div>';
+              input.value = '';
+              output.scrollTop = output.scrollHeight;
+              fetch('https://chrxmaticc-copliot.vercel.app/api/agent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'bash', command: cmd })
+              }).then(function(r) { return r.json(); }).then(function(d) {
+                var out = d.output || d.error || 'no output';
+                output.innerHTML += '<div style="color:#50fa7b;">' + out.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+                output.scrollTop = output.scrollHeight;
+              }).catch(function(err) {
+                output.innerHTML += '<div style="color:#ff453a;">error: ' + err.message + '</div>';
+                output.scrollTop = output.scrollHeight;
+              });
+            }
+          });
+          input.focus();
+        }
+      };
+      break;
+
     default:
       return null;
   }
+  return result;
 }
 
 function injectCSS(css) {
@@ -209,4 +277,4 @@ function resetAllInjections() {
   localStorage.removeItem('chrx_presets');
 }
 
-console.log(':fire: chrx-markdown.js loaded — live code execution ready (v1.1)');
+console.log(':fire: chrx-markdown.js loaded — live code execution ready (v1.2 with terminal)');
