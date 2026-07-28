@@ -805,6 +805,11 @@
 
     /* ═══ INIT APP ═══ */
     function initApp(){
+      var ghToken = localStorage.getItem('chrxmaticc_github_token');
+if (ghToken) {
+  window._githubToken = ghToken;
+  setGitHubConnected('chrxmaticc');
+}
       try{window._savedChats=JSON.parse(localStorage.getItem('chrxmaticc_chats')||'{}')}catch(e){window._savedChats={}}
       if(Object.keys(window._savedChats).length===0){
         var id='chat_'+Date.now();
