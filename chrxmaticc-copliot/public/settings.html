@@ -8,36 +8,29 @@
 <meta name="theme-color" content="#0d0e14">
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-<title>Chrxmaticc — Settings</title>
+<title>Chrxmaticc — Settings 2.0</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;width:100%;overflow-x:hidden;background:#0d0e14;color:#e8d5c4;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif}
 body{display:flex;flex-direction:column;align-items:center;padding:0 16px 40px}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 0%,rgba(212,165,116,0.06) 0%,transparent 60%),radial-gradient(ellipse at 50% 100%,rgba(74,127,192,0.04) 0%,transparent 50%);z-index:0}
 
-/* ── Top bar ── */
 .topbar{width:100%;max-width:600px;display:flex;align-items:center;gap:12px;padding:16px 0;position:sticky;top:0;z-index:10;background:rgba(13,14,20,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .topbar-back{background:none;border:none;cursor:pointer;color:#d4a574;font-size:22px;padding:4px 8px;display:flex;align-items:center;text-decoration:none}
 .topbar-title{font-size:18px;font-weight:700;letter-spacing:-.3px;flex:1}
 
-/* ── Container ── */
 .settings-wrap{width:100%;max-width:600px;display:flex;flex-direction:column;gap:20px;position:relative;z-index:1}
 
-/* ── Card ── */
 .card{background:rgba(20,20,28,0.85);border:1px solid rgba(140,130,180,0.14);border-radius:18px;padding:20px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:14px}
 .card-title{font-size:12px;font-weight:700;color:#8a8a9a;letter-spacing:.8px;text-transform:uppercase;margin-bottom:2px}
 
-/* ── Profile section ── */
 .profile-header{display:flex;align-items:center;gap:14px}
 .profile-avatar{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(212,165,116,0.3);cursor:pointer;transition:border-color .2s;flex-shrink:0}
 .profile-avatar:hover{border-color:#d4a574}
-.profile-avatar-placeholder{width:64px;height:64px;border-radius:50%;background:rgba(212,165,116,0.1);display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;border:2px dashed rgba(212,165,116,0.2);transition:border-color .2s}
-.profile-avatar-placeholder:hover{border-color:#d4a574}
 .profile-info{display:flex;flex-direction:column;gap:4px}
 .profile-name{font-size:16px;font-weight:700;color:#e8d5c4}
 .profile-username{font-size:12px;color:#8a8a9a}
 
-/* ── Form elements ── */
 .form-group{display:flex;flex-direction:column;gap:4px}
 .form-label{font-size:11px;font-weight:600;color:#8a8a9a;letter-spacing:.3px}
 .form-input{background:rgba(255,255,255,0.04);border:1px solid rgba(140,130,180,0.12);border-radius:10px;padding:10px 14px;color:#e8d5c4;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
@@ -46,12 +39,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .form-textarea{resize:vertical;min-height:80px;line-height:1.5}
 .form-hint{font-size:10px;color:#8a8a9a;opacity:.6;margin-top:2px}
 
-/* ── Inline row ── */
 .inline-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .inline-label{font-size:13px;font-weight:500;color:#e8d5c4}
 .inline-sub{font-size:10px;color:#8a8a9a;opacity:.7}
 
-/* ── Toggle switch ── */
 .toggle{position:relative;width:44px;height:26px;flex-shrink:0}
 .toggle input{display:none}
 .toggle .track{position:absolute;inset:0;border-radius:13px;background:rgba(255,255,255,0.08);transition:background .25s;cursor:pointer}
@@ -59,13 +50,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .toggle .thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#e8d5c4;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
 .toggle input:checked+.track .thumb{left:21px;background:#d4a574}
 
-/* ── Slider ── */
 .slider-row{display:flex;align-items:center;gap:10px}
 .slider{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);-webkit-appearance:none;appearance:none;outline:none;cursor:pointer}
 .slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#d4a574;border:2px solid #0d0e14;cursor:grab;box-shadow:0 0 10px rgba(212,165,116,0.3)}
 .slider-value{font-size:12px;font-weight:600;color:#d4a574;min-width:32px;text-align:right}
 
-/* ── Theme grid ── */
 .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .theme-opt{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 8px;border-radius:14px;border:1.5px solid transparent;cursor:pointer;transition:all .2s;background:rgba(255,255,255,0.02)}
 .theme-opt:hover{background:rgba(212,165,116,0.06);border-color:rgba(212,165,116,0.2)}
@@ -73,7 +62,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .theme-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0}
 .theme-label{font-size:10px;font-weight:600;color:#8a8a9a;text-align:center;letter-spacing:.2px}
 
-/* ── Buttons ── */
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;border:none;width:100%}
 .btn-primary{background:linear-gradient(135deg,#c9956b,#d4a574);color:#0b0b0a}
 .btn-primary:hover{box-shadow:0 0 20px rgba(212,165,116,0.3);transform:translateY(-1px)}
@@ -82,30 +70,26 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .btn-danger{background:transparent;border:1px solid rgba(255,69,58,0.2);color:#ff453a}
 .btn-danger:hover{border-color:#ff453a;background:rgba(255,69,58,0.06)}
 
-/* ── GitHub section ── */
 .gh-status{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(48,209,88,0.06);border:1px solid rgba(48,209,88,0.15)}
 .gh-status .dot{width:8px;height:8px;border-radius:50%;background:#30d158;box-shadow:0 0 8px rgba(48,209,88,0.5);flex-shrink:0}
 .gh-status .dot.off{background:#ff453a;box-shadow:0 0 8px rgba(255,69,58,0.5)}
 .gh-status-text{font-size:13px;font-weight:500;flex:1}
 .gh-status-text span{color:#30d158;font-weight:600}
 
-/* ── Toast ── */
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:12px;font-size:12px;font-weight:600;z-index:999;background:rgba(20,20,28,0.95);border:1px solid #d4a574;color:#e8d5c4;animation:toastIn .3s ease,toastOut .3s ease 2s forwards;pointer-events:none}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateX(-50%) translateY(-8px)}}
 
-@media(max-width:500px){.theme-grid{grid-template-columns:repeat(4,1fr);gap:6px}.profile-avatar,.profile-avatar-placeholder{width:50px;height:50px}}
+@media(max-width:500px){.theme-grid{grid-template-columns:repeat(4,1fr);gap:6px}.profile-avatar{width:50px;height:50px}}
 </style>
 </head>
 <body>
 
-<!-- ═══ TOPBAR ═══ -->
 <div class="topbar">
   <a href="app.html" class="topbar-back">&lsaquo;</a>
-  <div class="topbar-title">Settings</div>
+  <div class="topbar-title">Settings 2.0</div>
 </div>
 
-<!-- ═══ SETTINGS ═══ -->
 <div class="settings-wrap">
 
   <!-- PROFILE -->
@@ -119,23 +103,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
       </div>
     </div>
     <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="handleAvatarChange(event)">
-    <div class="form-group">
-      <div class="form-label">Display Name</div>
-      <input class="form-input" id="inputDisplayName" placeholder="How should I call you?" maxlength="40" oninput="autoSaveProfile()">
-    </div>
-    <div class="form-group">
-      <div class="form-label">Username</div>
-      <input class="form-input" id="inputUsername" placeholder="@username" maxlength="30" oninput="autoSaveProfile()">
-    </div>
-    <div class="form-group">
-      <div class="form-label">Bio</div>
-      <input class="form-input" id="inputBio" placeholder="A short bio about yourself" maxlength="120" oninput="autoSaveProfile()">
-    </div>
-    <div class="form-group">
-      <div class="form-label">Personal Info (fed to AI context)</div>
-      <textarea class="form-input form-textarea" id="inputPersonalInfo" placeholder="Tell the AI about yourself — your preferences, coding style, projects, etc." oninput="autoSaveProfile()"></textarea>
-      <div class="form-hint">This helps Chrxmaticc personalize responses. Be specific!</div>
-    </div>
+    <div class="form-group"><div class="form-label">Display Name</div><input class="form-input" id="inputDisplayName" placeholder="How should I call you?" maxlength="40" oninput="autoSaveProfile()"></div>
+    <div class="form-group"><div class="form-label">Username</div><input class="form-input" id="inputUsername" placeholder="@username" maxlength="30" oninput="autoSaveProfile()"></div>
+    <div class="form-group"><div class="form-label">Bio</div><input class="form-input" id="inputBio" placeholder="A short bio about yourself" maxlength="120" oninput="autoSaveProfile()"></div>
+    <div class="form-group"><div class="form-label">Personal Info (fed to AI context)</div><textarea class="form-input form-textarea" id="inputPersonalInfo" placeholder="Tell the AI about yourself — your preferences, coding style, projects, etc." oninput="autoSaveProfile()"></textarea><div class="form-hint">This helps Chrxmaticc personalize responses. Be specific!</div></div>
   </div>
 
   <!-- THEME -->
@@ -153,25 +124,94 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
     </div>
   </div>
 
+  <!-- AI DEFAULTS -->
+  <div class="card">
+    <div class="card-title">AI Defaults</div>
+    <div class="inline-row">
+      <div><div class="inline-label">Default Model</div><div class="inline-sub">Personality for new chats</div></div>
+      <select class="form-input" id="defaultModel" style="width:140px;padding:8px 10px;font-size:12px;" onchange="saveDefault('model')">
+        <option value="sol">Sol 3.5</option><option value="conversational">Conversational</option><option value="intermediate">Intermediate</option><option value="speed">Speed</option><option value="vision">Vision</option>
+      </select>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Default Workflow</div><div class="inline-sub">Mode for new chats</div></div>
+      <select class="form-input" id="defaultWorkflow" style="width:140px;padding:8px 10px;font-size:12px;" onchange="saveDefault('workflow')">
+        <option value="code">Code</option><option value="plan">Plan</option><option value="review">Review</option><option value="surprise">Surprise</option><option value="cancel">Chat</option>
+      </select>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Default Effort</div><div class="inline-sub">How hard the AI tries</div></div>
+      <select class="form-input" id="defaultEffort" style="width:140px;padding:8px 10px;font-size:12px;" onchange="saveDefault('effort')">
+        <option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="extreme">Ultracode</option>
+      </select>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Default Roast</div><div class="inline-sub">Base sass level</div></div>
+      <select class="form-input" id="defaultRoast" style="width:140px;padding:8px 10px;font-size:12px;" onchange="saveDefault('roast')">
+        <option value="nice">Nice (0%)</option><option value="mild">Mild (25%)</option><option value="spicy">Spicy (50%)</option><option value="savage">Savage (75%)</option>
+      </select>
+    </div>
+  </div>
+
   <!-- PREFERENCES -->
   <div class="card">
     <div class="card-title">Preferences</div>
     <div class="inline-row">
-      <div>
-        <div class="inline-label">Typing Speed</div>
-        <div class="inline-sub">How fast responses appear</div>
-      </div>
+      <div><div class="inline-label">Typing Speed</div><div class="inline-sub">How fast responses appear</div></div>
       <div class="slider-row" style="width:160px">
         <input type="range" class="slider" id="typingSpeedSlider" min="0" max="50" step="10" value="10" oninput="updateTypingSpeed(this.value)">
         <div class="slider-value" id="typingSpeedVal">1x</div>
       </div>
     </div>
     <div class="inline-row">
-      <div>
-        <div class="inline-label">Text-to-Speech</div>
-        <div class="inline-sub">Read responses aloud</div>
-      </div>
+      <div><div class="inline-label">Text-to-Speech</div><div class="inline-sub">Read responses aloud</div></div>
       <label class="toggle"><input type="checkbox" id="ttsToggle" onchange="saveTTS()"><div class="track"><div class="thumb"></div></div></label>
+    </div>
+  </div>
+
+  <!-- POWER FEATURES -->
+  <div class="card">
+    <div class="card-title">Power Features</div>
+    <div class="inline-row">
+      <div><div class="inline-label">Autopilot</div><div class="inline-sub">Sol works while you sleep</div></div>
+      <label class="toggle"><input type="checkbox" id="autopilotToggle" onchange="saveToggle('autopilot')"><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Web Search</div><div class="inline-sub">Auto-search DuckDuckGo</div></div>
+      <label class="toggle"><input type="checkbox" id="webSearchToggle" onchange="saveToggle('websearch')" checked><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Markdown Execution</div><div class="inline-sub">:::css, :::js, :::html blocks</div></div>
+      <label class="toggle"><input type="checkbox" id="markdownToggle" onchange="saveToggle('markdown')" checked><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Vault Mode</div><div class="inline-sub">Confirm before GitHub writes</div></div>
+      <label class="toggle"><input type="checkbox" id="vaultToggle" onchange="saveToggle('vault')"><div class="track"><div class="thumb"></div></div></label>
+    </div>
+  </div>
+
+  <!-- VISUALS -->
+  <div class="card">
+    <div class="card-title">Visuals</div>
+    <div class="inline-row">
+      <div><div class="inline-label">Particle Effects</div><div class="inline-sub">Background particle canvas</div></div>
+      <label class="toggle"><input type="checkbox" id="particlesToggle" onchange="saveToggle('particles')" checked><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Cursor God Ray</div><div class="inline-sub">Glowing cursor effect</div></div>
+      <label class="toggle"><input type="checkbox" id="cursorToggle" onchange="saveToggle('cursor')" checked><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Geto & Bee</div><div class="inline-sub">Ambient characters</div></div>
+      <label class="toggle"><input type="checkbox" id="getoBeeToggle" onchange="saveToggle('getobee')" checked><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Sound Effects</div><div class="inline-sub">Subtle UI chimes</div></div>
+      <label class="toggle"><input type="checkbox" id="soundToggle" onchange="saveToggle('sound')"><div class="track"><div class="thumb"></div></div></label>
+    </div>
+    <div class="inline-row">
+      <div><div class="inline-label">Custom Emojis</div><div class="inline-sub">:geto: :bee: :fire: etc.</div></div>
+      <label class="toggle"><input type="checkbox" id="emojiToggle" onchange="saveToggle('emoji')" checked><div class="track"><div class="thumb"></div></div></label>
     </div>
   </div>
 
@@ -182,18 +222,27 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
       <div class="dot off" id="ghDot"></div>
       <div class="gh-status-text" id="ghStatusText">Not connected — <span onclick="connectGitHub()" style="cursor:pointer;text-decoration:underline">connect now</span></div>
     </div>
-    <button class="btn btn-outline" id="ghConnectBtn" onclick="connectGitHub()" style="display:flex">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      Connect GitHub
-    </button>
+    <button class="btn btn-outline" id="ghConnectBtn" onclick="connectGitHub()" style="display:flex"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>Connect GitHub</button>
     <button class="btn btn-outline" id="ghDisconnectBtn" onclick="disconnectGitHub()" style="display:none">Disconnect GitHub</button>
+  </div>
+
+  <!-- MEMORY MANAGEMENT -->
+  <div class="card">
+    <div class="card-title">AI Memory</div>
+    <div class="form-hint" id="memoryStats" style="text-align:left">Loading memory stats…</div>
+    <button class="btn btn-outline" onclick="viewMemory()">View Memory</button>
+    <button class="btn btn-danger" onclick="clearMemory()">Clear AI Memory</button>
+    <div class="form-hint" style="text-align:center">Clearing memory resets inside jokes, traits, and moments. Chat history is separate.</div>
   </div>
 
   <!-- DATA -->
   <div class="card">
     <div class="card-title">Data</div>
+    <button class="btn btn-outline" onclick="exportData()">Export All Data (JSON)</button>
+    <button class="btn btn-outline" onclick="document.getElementById('importInput').click()">Import Data (JSON)</button>
+    <input type="file" id="importInput" accept=".json" style="display:none" onchange="importData(event)">
     <button class="btn btn-danger" onclick="clearAllData()">Clear All Local Data</button>
-    <div class="form-hint" style="text-align:center;margin-top:4px">This resets everything — chats, settings, profile. Cannot be undone.</div>
+    <div class="form-hint" style="text-align:center;margin-top:4px">Clearing resets everything — chats, settings, profile. Cannot be undone.</div>
   </div>
 
   <!-- SAVE -->
@@ -203,11 +252,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 </div>
 
 <script>
-/* ═══ DATA ═══ */
 var THEME_META={gold:'#0b0b0a',midnight:'#08080f',glass:'#0a0a0f',chrome:'#141414',white:'#f0f2f5',chromatic:'#0d0e14',liquid:'#111114',rainbow:'#0e0e18'};
 var TYPING_LABELS={0:'Off',10:'1x',20:'2x',30:'3x',40:'4x',50:'5x'};
-
-/* ═══ LOAD ═══ */
 var profile = {};
 try { profile = JSON.parse(localStorage.getItem('chrxmaticc_profile') || '{}'); } catch(e) {}
 
@@ -227,10 +273,31 @@ var ts = parseInt(localStorage.getItem('chrxmaticc_typing_speed') || '10');
 document.getElementById('typingSpeedSlider').value = ts;
 document.getElementById('typingSpeedVal').textContent = TYPING_LABELS[ts] || ts;
 
+// Load default AI settings
+document.getElementById('defaultModel').value = localStorage.getItem('chrxmaticc_default_model') || 'sol';
+document.getElementById('defaultWorkflow').value = localStorage.getItem('chrxmaticc_default_workflow') || 'code';
+document.getElementById('defaultEffort').value = localStorage.getItem('chrxmaticc_default_effort') || 'medium';
+document.getElementById('defaultRoast').value = localStorage.getItem('chrxmaticc_default_roast') || 'nice';
+
+// Load toggles
+function loadToggle(id, key, def) {
+  var val = localStorage.getItem('chrxmaticc_' + key);
+  document.getElementById(id).checked = val === null ? def : val === 'true';
+}
+loadToggle('autopilotToggle', 'autopilot', false);
+loadToggle('webSearchToggle', 'websearch', true);
+loadToggle('markdownToggle', 'markdown', true);
+loadToggle('vaultToggle', 'vault', false);
+loadToggle('particlesToggle', 'particles', true);
+loadToggle('cursorToggle', 'cursor', true);
+loadToggle('getoBeeToggle', 'getobee', true);
+loadToggle('soundToggle', 'sound', false);
+loadToggle('emojiToggle', 'emoji', true);
+
 updateProfileUI();
 updateGitHubUI();
+updateMemoryStats();
 
-/* ═══ PROFILE ═══ */
 function updateProfileUI() {
   var name = profile.displayName || 'Guest';
   var user = profile.username || 'guest';
@@ -262,7 +329,6 @@ function handleAvatarChange(e) {
   reader.readAsDataURL(file);
 }
 
-/* ═══ THEME ═══ */
 function selectTheme(t) {
   document.querySelectorAll('.theme-opt').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-theme') === t);
@@ -270,7 +336,6 @@ function selectTheme(t) {
   localStorage.setItem('chrxmaticc_theme', t);
 }
 
-/* ═══ PREFERENCES ═══ */
 function updateTypingSpeed(v) {
   var val = parseInt(v);
   document.getElementById('typingSpeedVal').textContent = TYPING_LABELS[val] || val;
@@ -282,7 +347,18 @@ function saveTTS() {
   localStorage.setItem('chrxmaticc_tts', on);
 }
 
-/* ═══ GITHUB ═══ */
+function saveDefault(type) {
+  var map = { model: 'defaultModel', workflow: 'defaultWorkflow', effort: 'defaultEffort', roast: 'defaultRoast' };
+  var val = document.getElementById(map[type]).value;
+  localStorage.setItem('chrxmaticc_default_' + type, val);
+}
+
+function saveToggle(key) {
+  var map = { autopilot: 'autopilotToggle', websearch: 'webSearchToggle', markdown: 'markdownToggle', vault: 'vaultToggle', particles: 'particlesToggle', cursor: 'cursorToggle', getobee: 'getoBeeToggle', sound: 'soundToggle', emoji: 'emojiToggle' };
+  var el = document.getElementById(map[key]);
+  if (el) localStorage.setItem('chrxmaticc_' + key, el.checked);
+}
+
 function updateGitHubUI() {
   var token = localStorage.getItem('chrxmaticc_github_token');
   var repo = localStorage.getItem('chrxmaticc_github_repo');
@@ -290,7 +366,6 @@ function updateGitHubUI() {
   var text = document.getElementById('ghStatusText');
   var connectBtn = document.getElementById('ghConnectBtn');
   var disconnectBtn = document.getElementById('ghDisconnectBtn');
-
   if (token && repo) {
     if (dot) dot.className = 'dot';
     if (text) text.innerHTML = 'Connected — <span>' + repo + '</span>';
@@ -321,20 +396,98 @@ function disconnectGitHub() {
   toast('GitHub disconnected');
 }
 
-/* ═══ SAVE ═══ */
+function updateMemoryStats() {
+  try {
+    var mem = JSON.parse(localStorage.getItem('chrxmaticc_memory') || '{}');
+    var moments = (mem.moments || []).length;
+    var jokes = (mem.insideJokes || []).length;
+    var days = mem.firstChat ? Math.floor((Date.now() - new Date(mem.firstChat).getTime()) / 86400000) : 0;
+    document.getElementById('memoryStats').textContent = days + ' days of memory • ' + moments + ' moments • ' + jokes + ' inside jokes';
+  } catch(e) {
+    document.getElementById('memoryStats').textContent = 'No memory data yet.';
+  }
+}
+
+function viewMemory() {
+  try {
+    var mem = JSON.parse(localStorage.getItem('chrxmaticc_memory') || '{}');
+    var text = 'AI Memory:\n\n';
+    text += 'Active for: ' + (mem.firstChat ? Math.floor((Date.now() - new Date(mem.firstChat).getTime()) / 86400000) : 0) + ' days\n';
+    text += 'Conversations: ' + (mem.totalConversations || 0) + '\n\n';
+    text += 'Traits:\n' + JSON.stringify(mem.traits || {}, null, 2) + '\n\n';
+    text += 'Inside Jokes:\n';
+    (mem.insideJokes || []).forEach(function(j) { text += '- ' + j.phrase + ': ' + j.context + '\n'; });
+    text += '\nRecent Moments:\n';
+    (mem.moments || []).slice(-5).forEach(function(m) { text += '- [' + m.type + '] ' + m.text + '\n'; });
+    alert(text.slice(0, 2000));
+  } catch(e) { alert('Could not read memory.'); }
+}
+
+function clearMemory() {
+  if (confirm('Clear all AI memory? This resets inside jokes, traits, and moments.')) {
+    localStorage.removeItem('chrxmaticc_memory');
+    updateMemoryStats();
+    toast('Memory cleared!');
+  }
+}
+
+function exportData() {
+  var data = {};
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (key.startsWith('chrxmaticc_')) {
+      try { data[key] = JSON.parse(localStorage.getItem(key)); } catch(e) { data[key] = localStorage.getItem(key); }
+    }
+  }
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'chrxmaticc-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  toast('Data exported!');
+}
+
+function importData(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (confirm('This will overwrite your current data. Continue?')) {
+        Object.keys(data).forEach(function(key) {
+          if (key.startsWith('chrxmaticc_')) {
+            localStorage.setItem(key, typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]));
+          }
+        });
+        toast('Data imported! Reloading…');
+        setTimeout(function() { location.reload(); }, 1500);
+      }
+    } catch(err) { toast('Invalid JSON file.'); }
+  };
+  reader.readAsText(file);
+}
+
 function saveAllSettings() {
   autoSaveProfile();
-  var ts = parseInt(document.getElementById('typingSpeedSlider').value);
-  localStorage.setItem('chrxmaticc_typing_speed', ts);
-  var tts = document.getElementById('ttsToggle').checked;
-  localStorage.setItem('chrxmaticc_tts', tts);
+  localStorage.setItem('chrxmaticc_typing_speed', parseInt(document.getElementById('typingSpeedSlider').value));
+  localStorage.setItem('chrxmaticc_tts', document.getElementById('ttsToggle').checked);
   localStorage.setItem('chrxmaticc_theme', document.querySelector('.theme-opt.active')?.getAttribute('data-theme') || 'gold');
-  toast('Settings saved!');
+  ['autopilot','websearch','markdown','vault','particles','cursor','getobee','sound','emoji'].forEach(function(k) {
+    var map = { autopilot:'autopilotToggle', websearch:'webSearchToggle', markdown:'markdownToggle', vault:'vaultToggle', particles:'particlesToggle', cursor:'cursorToggle', getobee:'getoBeeToggle', sound:'soundToggle', emoji:'emojiToggle' };
+    var el = document.getElementById(map[k]);
+    if (el) localStorage.setItem('chrxmaticc_' + k, el.checked);
+  });
+  ['model','workflow','effort','roast'].forEach(function(t) {
+    var map = { model:'defaultModel', workflow:'defaultWorkflow', effort:'defaultEffort', roast:'defaultRoast' };
+    localStorage.setItem('chrxmaticc_default_' + t, document.getElementById(map[t]).value);
+  });
+  toast('All settings saved!');
 }
 
 function clearAllData() {
-  if (confirm('This will delete ALL your data — chats, settings, profile, everything. Are you sure?')) {
-    if (confirm('Seriously. Last chance. Clear everything?')) {
+  if (confirm('Delete ALL data — chats, settings, profile, everything?')) {
+    if (confirm('Seriously. Last chance.')) {
       localStorage.clear();
       toast('All data cleared. Reloading…');
       setTimeout(function() { location.reload(); }, 1500);
@@ -350,7 +503,6 @@ function toast(m) {
   setTimeout(function() { if (t.parentNode) t.remove(); }, 2500);
 }
 
-// Handle GitHub callback
 (function() {
   var params = new URLSearchParams(window.location.search);
   var userParam = params.get('user');
