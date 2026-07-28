@@ -2,7 +2,8 @@
 // ║  Chrxmaticc Copilot — Engine v8.0       ║
 // ║  v7.0 base + Web Search + Image         ║
 // ║  + Emoji, Memory, Markdown, Cursor,     ║
-// ║    Impact, Unhinged, Toolbox (guarded)  ║
+// ║    Impact, Unhinged, Toolbox, Blend,    ║
+// ║    WebGL, Autopilot                     ║
 // ╚══════════════════════════════════════════╝
 
 var messagesEl, inputEl, sendBtn, typingEl, statusDot, statusText, micBtn;
@@ -211,7 +212,29 @@ async function sendMessage() {
 
   // ── NEW: apply custom emoji to displayed message (if emoji module is loaded) ──
   var parsedDisplay = (typeof parseCustomEmojis === 'function') ? parseCustomEmojis(displayText) : displayText;
-  addBubble(parsedDisplay, 'user');
+
+  // ── NEW: Process markdown blocks in user's own message ──
+  var userCleanText = displayText;
+  if (typeof parseChrxMarkdown === 'function') {
+    var userParsed = parseChrxMarkdown(displayText);
+    userCleanText = userParsed.cleanText || displayText;
+    // Render any blocks the user included
+    userParsed.blocks.forEach(function(block) {
+      if (typeof executeChrxBlock === 'function') {
+        var blockResult = executeChrxBlock(block);
+        if (blockResult && blockResult.html) {
+          addBubble(blockResult.html, 'ai');  // show as separate system bubble
+          if (blockResult.onRender) {
+            setTimeout(function() { blockResult.onRender(); }, 10);
+          }
+        }
+      }
+    });
+  }
+
+  // Apply emoji to cleaned text for the bubble
+  var finalUserDisplay = (typeof parseCustomEmojis === 'function') ? parseCustomEmojis(userCleanText) : userCleanText;
+  addBubble(finalUserDisplay, 'user');
   conversation.push({ role: 'user', content: displayText });  // store original text
 
   inputEl.value = '';
@@ -320,6 +343,9 @@ async function sendMessage() {
               var blockResult = executeChrxBlock(block);
               if (blockResult && blockResult.html) {
                 addBubble(blockResult.html, 'ai');
+                if (blockResult.onRender) {
+                  setTimeout(function() { blockResult.onRender(); }, 10);
+                }
               }
             }
           });
@@ -359,6 +385,9 @@ async function sendMessage() {
             var blockResult = executeChrxBlock(block);
             if (blockResult && blockResult.html) {
               addBubble(blockResult.html, 'ai');
+              if (blockResult.onRender) {
+                setTimeout(function() { blockResult.onRender(); }, 10);
+              }
             }
           }
         });
@@ -733,6 +762,241 @@ function commitToRepo() {
   var repo = localStorage.getItem('chrxmaticc_github_repo');
   if (!repo) { toast('Select a repo in settings first'); return; }
   toast('Committing to ' + repo + '…');
+}
+
+/* ═══ BLEND FUNCTIONS ═══ */
+function getBlendBaseUrl() { return 'https://chrxmaticc-copliot.vercel.app/api/blend'; }
+
+async function createBlendRoom() {
+  var name = prompt('Room name:', 'My Blend Room');
+  if (!name) return;
+  try {
+    var res = await fetch(getBlendBaseUrl() + '?action=create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name })
+    });
+    var data = await res.json();
+    if (data.room_id) {
+      toast('Room created! Invite: ' + data.invite_code);
+      loadBlendRooms();
+      joinBlendRoom(data.room_id, data.invite_code);
+    } else {
+      toast('Failed to create room.');
+    }
+  } catch(e) { toast('Error creating room.'); }
+}
+
+function loadBlendRooms() {
+  var list = document.getElementById('blendRoomList');
+  if (!list) return;
+  list.innerHTML = '';
+  if (window._blendRooms && window._blendRooms.length === 0) {
+    list.innerHTML = '<div style="font-size:11px;color:var(--mut);padding:8px">No rooms yet.</div>';
+    return;
+  }
+  window._blendRooms = window._blendRooms || [];
+  window._blendRooms.forEach(function(room) {
+    var item = document.createElement('div');
+    item.className = 'blend-room-item' + (room.id === window._blendActiveRoomId ? ' active' : '');
+    item.innerHTML = '<span class="blend-room-item-dot" style="background:' + (room.color || 'var(--a)') + ';box-shadow:0 0 8px ' + (room.color || 'var(--a)') + '"></span>' + (room.name || 'Room');
+    item.onclick = function() { joinBlendRoom(room.id, room.invite_code); };
+    list.appendChild(item);
+  });
+}
+
+function joinBlendRoom(roomId, inviteCode) {
+  window._blendActiveRoomId = roomId;
+  var panel = document.getElementById('blendPanel');
+  if (panel) panel.classList.add('open');
+  document.getElementById('blendRoomName').textContent = 'Room';
+  document.getElementById('blendRoomVibe').textContent = '🔥 active';
+  document.getElementById('blendMessages').innerHTML = '';
+  loadBlendMessages();
+  if (window._blendPollInterval) clearInterval(window._blendPollInterval);
+  window._blendPollInterval = setInterval(loadBlendMessages, 2000);
+  if (!window._blendRooms.find(function(r) { return r.id === roomId; })) {
+    window._blendRooms.push({ id: roomId, name: 'Room', invite_code: inviteCode, color: 'var(--a)' });
+    loadBlendRooms();
+  }
+  loadBlendRooms();
+}
+
+async function loadBlendMessages() {
+  if (!window._blendActiveRoomId) return;
+  try {
+    var res = await fetch(getBlendBaseUrl() + '?action=messages&room_id=' + window._blendActiveRoomId);
+    var data = await res.json();
+    var container = document.getElementById('blendMessages');
+    if (!container) return;
+    container.innerHTML = '';
+    (data.messages || []).forEach(function(msg) {
+      var row = document.createElement('div');
+      row.className = 'blend-msg' + (msg.role === 'assistant' ? ' ai' : '');
+      row.innerHTML = '<div class="blend-msg-user">' + (msg.username || 'User') + '</div><div class="blend-msg-content">' + msg.content + '</div>';
+      container.appendChild(row);
+    });
+    container.scrollTop = container.scrollHeight;
+  } catch(e) {}
+}
+
+async function sendBlendMessage() {
+  var input = document.getElementById('blendInput');
+  if (!input || !window._blendActiveRoomId) return;
+  var content = input.value.trim();
+  if (!content) return;
+  input.value = '';
+  try {
+    await fetch(getBlendBaseUrl() + '?action=messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        room_id: window._blendActiveRoomId,
+        user_id: window._blendCurrentUserId || 'anon',
+        username: window._blendCurrentUsername || 'Guest',
+        content: content
+      })
+    });
+    loadBlendMessages();
+    if (content.includes('@Chrxmaticc')) {
+      triggerBlendAI();
+    }
+  } catch(e) {}
+}
+
+async function triggerBlendAI() {
+  try {
+    var recent = [];
+    var container = document.getElementById('blendMessages');
+    if (container) {
+      var msgs = container.querySelectorAll('.blend-msg');
+      msgs.forEach(function(m) {
+        var user = m.querySelector('.blend-msg-user')?.textContent || 'User';
+        var text = m.querySelector('.blend-msg-content')?.textContent || '';
+        recent.push({ username: user, content: text });
+      });
+    }
+    await fetch(getBlendBaseUrl() + '?action=ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room_id: window._blendActiveRoomId, recent_messages: recent })
+    });
+    loadBlendMessages();
+  } catch(e) {}
+}
+
+function toggleBlendPanel() {
+  var panel = document.getElementById('blendPanel');
+  if (panel) panel.classList.toggle('open');
+}
+
+function copyBlendInvite() {
+  if (!window._blendActiveRoomId) return toast('No active room');
+  var room = window._blendRooms.find(function(r) { return r.id === window._blendActiveRoomId; });
+  if (!room) return toast('Room not found');
+  var link = 'https://chrxmaticc-copliot.vercel.app/blend?join=' + room.invite_code;
+  navigator.clipboard.writeText(link).then(function() { toast('Invite link copied!'); });
+}
+
+/* ═══ WEBGL VIEWER ═══ */
+function openWebGLViewer() {
+  var panel = document.getElementById('webglPanel');
+  if (!panel) return;
+  panel.classList.add('open');
+  initWebGLScene();
+}
+
+function closeWebGLViewer() {
+  var panel = document.getElementById('webglPanel');
+  if (panel) panel.classList.remove('open');
+}
+
+var webglScene, webglCamera, webglRenderer, webglMesh;
+function initWebGLScene() {
+  if (typeof THREE === 'undefined') return;
+  var wrap = document.getElementById('webglCanvasWrap');
+  if (!wrap || webglRenderer) return;
+  webglScene = new THREE.Scene();
+  webglCamera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 100);
+  webglCamera.position.set(2, 1.5, 3);
+  webglCamera.lookAt(0, 0, 0);
+  webglRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  webglRenderer.setSize(wrap.clientWidth, wrap.clientHeight);
+  webglRenderer.setClearColor(0x0b0b0a, 0);
+  wrap.appendChild(webglRenderer.domElement);
+
+  var light = new THREE.AmbientLight(0x404060);
+  webglScene.add(light);
+  var dirLight = new THREE.DirectionalLight(0xd4a574, 1);
+  dirLight.position.set(5, 5, 5);
+  webglScene.add(dirLight);
+
+  var geo = new THREE.IcosahedronGeometry(1.1, 2);
+  var edges = new THREE.EdgesGeometry(geo);
+  var mat = new THREE.LineBasicMaterial({ color: 0xd4a574 });
+  webglMesh = new THREE.LineSegments(edges, mat);
+  webglScene.add(webglMesh);
+
+  var orbitDots = [];
+  var dotGeo = new THREE.SphereGeometry(0.04, 8, 8);
+  var dotMat = new THREE.MeshBasicMaterial({ color: 0xd4a574 });
+  for (var i = 0; i < 8; i++) {
+    var dot = new THREE.Mesh(dotGeo, dotMat);
+    dot.userData = { angle: (Math.PI * 2 * i) / 8, radius: 1.6, speed: 0.003 + Math.random() * 0.005, yOffset: (Math.random() - 0.5) * 1.5 };
+    webglScene.add(dot);
+    orbitDots.push(dot);
+  }
+
+  function animateWebGL() {
+    if (!webglRenderer) return;
+    requestAnimationFrame(animateWebGL);
+    webglMesh.rotation.y += 0.005;
+    webglMesh.rotation.x += 0.002;
+    orbitDots.forEach(function(dot) {
+      dot.userData.angle += dot.userData.speed;
+      dot.position.x = Math.cos(dot.userData.angle) * dot.userData.radius;
+      dot.position.z = Math.sin(dot.userData.angle) * dot.userData.radius;
+      dot.position.y = dot.userData.yOffset + Math.sin(dot.userData.angle * 2) * 0.3;
+    });
+    webglRenderer.render(webglScene, webglCamera);
+  }
+  animateWebGL();
+  window.addEventListener('resize', function() {
+    if (!webglRenderer || !webglCamera) return;
+    var wrap = document.getElementById('webglCanvasWrap');
+    webglCamera.aspect = wrap.clientWidth / wrap.clientHeight;
+    webglCamera.updateProjectionMatrix();
+    webglRenderer.setSize(wrap.clientWidth, wrap.clientHeight);
+  });
+}
+
+/* ═══ AUTOPILOT QUEUE (send current message to background) ═══ */
+async function sendToAutopilot() {
+  var text = inputEl ? inputEl.value.trim() : '';
+  if (!text) return toast('Type a task first.');
+  var token = localStorage.getItem('chrxmaticc_github_token');
+  var repo = localStorage.getItem('chrxmaticc_github_repo');
+  try {
+    var res = await fetch('https://chrxmaticc-copliot.vercel.app/api/agent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'autopilot',
+        subAction: 'enqueue',
+        prompt: text,
+        githubToken: token || '',
+        repo: repo || '',
+        userId: window._blendCurrentUserId || 'anon'
+      })
+    });
+    var data = await res.json();
+    if (data.taskId) {
+      toast('Task queued for autopilot. Sol will work on it.');
+      inputEl.value = '';
+    } else {
+      toast('Failed to queue task.');
+    }
+  } catch(e) { toast('Autopilot error.'); }
 }
 
 /* ═══ STARTUP ═══ */
